@@ -9,10 +9,11 @@ Customer
 uid, plantype, recorded rentals, number of rentals, maximum number of rentals
 
 Rentals
-rid, movies, customer uid
+rid, movies, customer uid, status
 
-PastRentals
-rid, movies, customer uid
+*Removed*
+-PastRentals
+-rid, movies, customer uid
 
 Rental plans
 pid, max rentals, fees, duration
@@ -45,13 +46,8 @@ max_rentals integer
 CREATE TABLE RENTALS(
 rid integer UNIQUE,
 mid FOREIGN KEY REFRENCES MOVIES (mid),
-uid FOREIGN KEY REFRENCES Customer (uid)
-);
-
-CREATE TABLE RENTALS_HISTORY(
-rhid integer UNIQUE,
-mid FOREIGN KEY REFRENCES MOVIES (mid),
-uid FOREIGN KEY REFRENCES Customer (uid)
+uid FOREIGN KEY REFRENCES Customer (uid),
+status VARCHAR(10) CHECK (status = 'open' or status = 'closed')
 );
 
 //Added the name field
