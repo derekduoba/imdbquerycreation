@@ -33,9 +33,7 @@ public class Query {
                      + "WHERE x.mid = ? and x.did = y.id";
     private PreparedStatement _director_mid_statement;
 
-    /* uncomment, and edit, after your create your own customer database */
-    /*
-    private String _customer_login_sql = "SELECT * FROM customers WHERE login = ? and password = ?";
+    private String _customer_login_sql = "SELECT * FROM login WHERE username = ? and password = ?";
     private PreparedStatement _customer_login_statement;
 
     private String _begin_transaction_read_write_sql = "BEGIN TRANSACTION READ WRITE";
@@ -46,7 +44,7 @@ public class Query {
 
     private String _rollback_transaction_sql = "ROLLBACK TRANSACTION";
     private PreparedStatement _rollback_transaction_statement;
-     */
+    
 
     public Query() {
     }
@@ -94,12 +92,12 @@ public class Query {
         _director_mid_statement = _imdb.prepareStatement(_director_mid_sql);
 
         /* uncomment after you create your customers database */
-        /*
+        
         _customer_login_statement = _customer_db.prepareStatement(_customer_login_sql);
         _begin_transaction_read_write_statement = _customer_db.prepareStatement(_begin_transaction_read_write_sql);
         _commit_transaction_statement = _customer_db.prepareStatement(_commit_transaction_sql);
         _rollback_transaction_statement = _customer_db.prepareStatement(_rollback_transaction_sql);
-         */
+         
 
         /* add here more prepare statements for all the other queries you need */
         /* . . . . . . */
@@ -141,9 +139,8 @@ public class Query {
     /* login transaction: invoked only once, when the app is started  */
     public int transaction_login(String name, String password) throws Exception {
         /* authenticates the user, and returns the user id, or -1 if authentication fails */
-
-        /* Uncomment after you create your own customers database */
-        /*
+    
+	/* uncomment after you create your customers database */
         int cid;
 
         _customer_login_statement.clearParameters();
@@ -153,12 +150,16 @@ public class Query {
         if (cid_set.next()) cid = cid_set.getInt(1);
         else cid = -1;
         return(cid);
-         */
-        return (55);
+
     }
 
     public void transaction_personal_data(int cid) throws Exception {
         /* println the customer's personal data: name, and plan number */
+	int cid;
+
+        
+	//
+	
     }
 
 
@@ -199,6 +200,8 @@ public class Query {
     public void transaction_choose_plan(int cid, int pid) throws Exception {
         /* updates the customer's plan to pid: UPDATE customers SET plid = pid */
         /* remember to enforce consistency ! */
+	_search_statement.clearParameters();
+        _search_statement.setString(1, '%' + movie_title + '%');
     }
 
     public void transaction_list_plans() throws Exception {
