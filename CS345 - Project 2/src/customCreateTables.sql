@@ -34,7 +34,6 @@ city varChar(30),
 state varchar(30)
 );
 
-
 CREATE TABLE Customer(
 uid integer PRIMARY KEY,
 tid varchar(30) FOREIGN KEY REFRENCES RENTALPLANS (pid),
@@ -43,8 +42,6 @@ number_rented integer,
 max_rentals integer
 );
 
-
-//Multiple instances of similar rid and uid will map to different movies
 CREATE TABLE RENTALS(
 rid integer UNIQUE,
 mid FOREIGN KEY REFRENCES MOVIES (mid),
