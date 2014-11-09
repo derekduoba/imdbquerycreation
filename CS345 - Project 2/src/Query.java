@@ -44,6 +44,10 @@ public class Query {
 
     private String _rollback_transaction_sql = "ROLLBACK TRANSACTION";
     private PreparedStatement _rollback_transaction_statement;
+
+    // Created queries
+    private String transaction_list_plans_sql = "SELECT * FROM RENTALPLANS";
+    private PreparedStatement _list_plans_transaction_statement;
     
 
     public Query() {
@@ -100,6 +104,7 @@ public class Query {
          
 
         /* add here more prepare statements for all the other queries you need */
+	_list_plans_statement = customer_db.prepareStatement(transaction_list_plans_sql);
         /* . . . . . . */
     }
 
@@ -156,7 +161,7 @@ public class Query {
     public void transaction_personal_data(int cid) throws Exception {
         /* println the customer's personal data: name, and plan number */
 	int cid;
-
+	
         
 	//
 	
@@ -206,6 +211,13 @@ public class Query {
 
     public void transaction_list_plans() throws Exception {
         /* println all available plans: SELECT * FROM plan */
+
+        _list_plans_statement.clearParameters();
+        ResultSet cid_set = _list_plans_statement.executeQuery();
+        for(int i = 0; i < cid_set.getFetchSize(); i++){
+		System.out.println("Rental Plan " + (i+1) + ": " + cid_set.getString(2));
+	}
+
     }
     
     public void transaction_list_user_rentals(int cid) throws Exception {
