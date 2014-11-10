@@ -33,9 +33,9 @@ public class Query {
                      + "WHERE x.mid = ? and x.did = y.id";
     private PreparedStatement _director_mid_statement;
 
-    private String _customer_login_sql = "SELECT L.username, L.password FROM LOGIN L," 
-				+ "CUSTOMER C WHERE username = ? and password = ?"
-				+ "and L.lid = C.uid";
+    private String _customer_login_sql = "SELECT L.lid FROM LOGIN L" 
+				+ " WHERE username = ? and password = ?";
+    
     private PreparedStatement _customer_login_statement;
 
     private String _begin_transaction_read_write_sql = "BEGIN TRANSACTION READ WRITE";
@@ -95,7 +95,7 @@ public class Query {
     private PreparedStatement _list_movie_actors_statement;
     
     // return the movie's directors
-    private String _list_movie_directors_sql = "SELECT d1.fname, d1.lanme FROM directors as d1 INNER JOIN movie_directors as d2 ON d1.id=d2.did INNER JOIN movie as m ON m.id=d2.mid WHERE LOWER(m.name) like LOWER(?) ORDER BY m.id";
+    private String _list_movie_directors_sql = "SELECT d1.fname, d1.lname FROM directors as d1 INNER JOIN movie_directors as d2 ON d1.id=d2.did INNER JOIN movie as m ON m.id=d2.mid WHERE LOWER(m.name) like LOWER(?) ORDER BY m.id";
     private PreparedStatement _list_movie_directors_statement;
     		
     public Query() {
@@ -387,6 +387,10 @@ public class Query {
            Needs to run three SQL queries: (a) movies, (b) movies join directors, (c) movies join actors
            Answers are sorted by mid.
            Then merge-joins the three answer sets */
+    	_list_movie_details_statement.setString(1, movie_title);
+    	_list_movie_actors_statement.setString(1, movie_title);
+    	_list_movie_directors_statement.setString(1, movie_title);
+    	
     	ResultSet movie_titles = _list_movie_details_statement.executeQuery();
     	ResultSet actor_names = _list_movie_actors_statement.executeQuery();
     	ResultSet movie_directors = _list_movie_directors_statement.executeQuery();
