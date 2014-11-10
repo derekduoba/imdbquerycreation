@@ -33,7 +33,7 @@ password varchar(30)
 );
 
 CREATE TABLE CONTACTINFO(
-cid integer FOREIGN KEY REFRENCES CUSTOMER (uid),
+cid integer FOREIGN KEY REFERENCES CUSTOMER (uid),
 firstname varChar(30),
 lastname varChar(30),
 email varChar(30),
