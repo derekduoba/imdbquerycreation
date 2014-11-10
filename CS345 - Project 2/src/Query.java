@@ -51,8 +51,14 @@ public class Query {
     private String _transaction_list_plans_sql = "SELECT * FROM RENTALPLANS";
     private PreparedStatement _list_plans_transaction_statement;
 
-    private String _list_user_rentals_sql = "SELECT C.uid,  FROM CUSTOMERS C, MOVIERENTALS M WHERE C.cid = M.cid;"
-    
+    private String _list_user_rentals_sql = "SELECT C.uid FROM CUSTOMERS C, MOVIERENTALS M WHERE C.cid = M.cid;"
+    private PreparedStatement _list_user_rentals_statement;
+
+    private String _choose_plan_sql = "SELECT * FROM RENTALPLANS WHERE ? = name";
+    private PreparedStatement _choose_plan_statement;
+
+    private String _update_plan_sql = "UPDATE CUSTOMERS SET plid = pid";
+    private PreparedStatement _update_plan_statement;
 
     public Query() {
     }
@@ -109,6 +115,8 @@ public class Query {
 
         /* add here more prepare statements for all the other queries you need */
         _list_plans_transaction_statement = _customer_db.prepareStatement(_transaction_list_plans_sql);
+	_list_user_rentals_statement = _customer_db.prepareStatement(_list_user_rentals_sql);
+	_choose_plan_statement = _customer_db.prepareStatement(_choose_plan_sql); 
         /* . . . . . . */
     }
 
@@ -206,11 +214,13 @@ public class Query {
         System.out.println();
     }
 
-    public void transaction_choose_plan(int cid, int pid) throws Exception {
+    public synchronized void transaction_choose_plan(int cid, int pid) throws Exception {
         /* updates the customer's plan to pid: UPDATE customers SET plid = pid */
         /* remember to enforce consistency ! */
-	_search_statement.clearParameters();
-        _search_statement.setString(1, '%' + movie_title + '%');
+	_choose_plan_statement.clearParameters();
+        _choose_plan_statement.setString(1, '%' + pid + '%');
+	ResultSet plan_set = _choose_plan_statement.executeQuery();
+	
     }
 
     public void transaction_list_plans() throws Exception {

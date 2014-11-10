@@ -38,7 +38,7 @@ state varchar(30)
 
 CREATE TABLE Customer(
 uid integer PRIMARY KEY,
-tid varchar(30) FOREIGN KEY REFRENCES RENTALPLANS (pid),
+plid varchar(30) FOREIGN KEY REFRENCES RENTALPLANS (plid),
 rid varchar(30) FOREIGN KEY REFRENCES RENTALS (rid),
 number_rented integer,
 max_rentals integer
@@ -52,7 +52,7 @@ status VARCHAR(10) CHECK (status = 'open' or status = 'closed')
 
 //Added the name field
 CREATE TABLE RENTALPLANS(
-pid integer PRIMARY KEY,
+plid integer PRIMARY KEY,
 name VARCHAR(50) UNIQUE NOT NULL,
 max_rentals integer,
 cost float,
