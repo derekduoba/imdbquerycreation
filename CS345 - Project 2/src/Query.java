@@ -214,9 +214,10 @@ public class Query {
 
     }
 
+
     public void transaction_personal_data(int cid) throws Exception {
-        /* println the customer's personal data: name, and plan number */
-    	
+        // println the customer's personal data: name, and plan number
+    	/*
     	//clears and updates prepared statement
     	_transaction_personal_query.clearParameters();
     	_transaction_personal_query.setInt(1, cid);
@@ -227,6 +228,7 @@ public class Query {
     		System.out.println("Member: " + _personal_data.getString("firstname") + " " + _personal_data.getString("lastname") + " Rentals Left: "
     							+ (_personal_data.getInt("max_rentals") - _personal_data.getInt("number_rented")));
     	} 
+    	 */
     }
 
 
