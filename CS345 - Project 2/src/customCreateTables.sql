@@ -9,7 +9,8 @@ Customer
 uid, plantype, recorded rentals, number of rentals, maximum number of rentals
 
 Rentals
-rid, movies, customer uid, status
+rid, customer uid, status
+--Removed Movies since it's apart of a separate database
 
 *Removed*
 -PastRentals
@@ -45,7 +46,6 @@ max_rentals integer
 
 CREATE TABLE RENTALS(
 rid integer UNIQUE,
-mid FOREIGN KEY REFRENCES MOVIES (mid),
 uid FOREIGN KEY REFRENCES Customer (uid),
 status VARCHAR(10) CHECK (status = 'open' or status = 'closed')
 );

@@ -33,7 +33,9 @@ public class Query {
                      + "WHERE x.mid = ? and x.did = y.id";
     private PreparedStatement _director_mid_statement;
 
-    private String _customer_login_sql = "SELECT * FROM LOGIN WHERE username = ? and password = ?";
+    private String _customer_login_sql = "SELECT L.username, L.password FROM LOGIN L," 
+				+ "CUSTOMER C WHERE username = ? and password = ?"
+				+ "and L.lid = C.cid";
     private PreparedStatement _customer_login_statement;
 
     private String _begin_transaction_read_write_sql = "BEGIN TRANSACTION READ WRITE";
@@ -49,7 +51,7 @@ public class Query {
     private String _transaction_list_plans_sql = "SELECT * FROM RENTALPLANS";
     private PreparedStatement _list_plans_transaction_statement;
 
-    private String _list_user_rentals_sql = "SELECT C.uid,  FROM CUSTOMERS C, MOVIERENTALS M WHERE C.cid = M.cid
+    private String _list_user_rentals_sql = "SELECT C.uid,  FROM CUSTOMERS C, MOVIERENTALS M WHERE C.cid = M.cid;"
     
 
     public Query() {
@@ -216,7 +218,7 @@ public class Query {
 
     	_list_plans_transaction_statement.clearParameters();
         ResultSet cid_set = _list_plans_transaction_statement.executeQuery();
-        for(int i = 0; i < cid_set.getFetchSize(); i++){
+        while(cid_set.next()){
 		System.out.println("Rental Plan " + cid_set.getInt(1) + ": " + cid_set.getString(2));
 	}
 
@@ -226,8 +228,9 @@ public class Query {
         /* println all movies rented by the current user*/
 
 	_list_user_rentals_transaction_statement.clearParameters();
+	_list_user_rentals_transaction_statement.setString();
         ResultSet cid_set = _list_plans_transaction_statement.executeQuery();
-        for(int i = 0; i < cid_set.getFetchSize(); i++){
+        while(cid_set.next()){
 		System.out.println("Rented Movies: " + cid_set.getString(2));
 	}
 
