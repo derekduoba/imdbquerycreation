@@ -17,7 +17,7 @@ rid, customer uid, status
 -rid, movies, customer uid
 
 Rental plans
-pid, max rentals, fees, duration
+pid, name, max rentals, fees, duration
 */
 
 DROP TABLE LOGIN cascade;
@@ -39,7 +39,6 @@ CREATE TABLE CUSTOMER(
 uid integer PRIMARY KEY,
 plid integer REFERENCES RENTALPLANS (plid),
 number_rented integer,
-max_rentals integer
 );
 
 CREATE TABLE RENTALS(
@@ -64,4 +63,7 @@ city varChar(30),
 state varchar(30)
 );
 
+INSERT INTO RENTALPLANS VALUES(1, premium, 20, 19.99, 6);
+INSERT INTO RENTALPLANS VALUES(2, gold, 10, 9.99, 6);
 
+INSERT INTO CUSTOMER VALUES(1, 1, 3, );
