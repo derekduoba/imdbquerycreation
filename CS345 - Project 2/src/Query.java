@@ -59,7 +59,30 @@ public class Query {
 
     private String _update_plan_sql = "UPDATE CUSTOMERS SET plid = pid";
     private PreparedStatement _update_plan_statement;
+    
+    //Personal Data queries
+	private String _transaction_personal_data_query = "select i.firstname, i.lastname, c.number_rented, c.max_rentals from ContactInfo i, Customer c where i.cid = ? and c.uid = ?";
+	private PreparedStatement _transaction_personal_query;
+    
+    // transaction rent queries
+	private String _transaction_rent_query = "select r.rid, r.status, c.number_rented, c.max_rentals from Rentals r, Customer c where r.rid = ? and c.uid = ?";
+	private PreparedStatement _transaction_rent;
+	
+	private String _transaction_rent_update_rentals = "update rentals set uid = ?, status = '?' where rid = ?;";
+	private PreparedStatement _transaction_update_rentals;
+	
+	private String _transaction_rent_update_customer = "update customer set number_rented = ? where uid = ?";
+	private PreparedStatement _transaction_update_customer;
+	
+	//transaction return queries
+	private String _transaction_return_query = "select r.uid, r.status, c.number_rented from Rentals r, Customer c where r.rid = ? and c.uid = ?";
+	private PreparedStatement _transaction_return;
+	
+	private String _transaction_return_rental_update = "update Rentals set status = 'open' where rid = ?";
+	private PreparedStatement _transaction_return_rentals;
 
+	private String _transaction_return_customer_update = "update customer set number_rented = ? where uid = ?";
+	private PreparedStatement _transaction_return_customer;
     
     // Fast Search queries
     
@@ -193,11 +216,17 @@ public class Query {
 
     public void transaction_personal_data(int cid) throws Exception {
         /* println the customer's personal data: name, and plan number */
-	//int cid;
-	
-        
-	//
-	
+    	
+    	//clears and updates prepared statement
+    	_transaction_personal_query.clearParameters();
+    	_transaction_personal_query.setInt(1, cid);
+    	_transaction_personal_query.setInt(2, cid);
+    	ResultSet _personal_data = _transaction_personal_query.executeQuery();
+    	
+    	while(_personal_data.next()){
+    		System.out.println("Member: " + _personal_data.getString("firstname") + " " + _personal_data.getString("lastname") + " Rentals Left: "
+    							+ (_personal_data.getInt("max_rentals") - _personal_data.getInt("number_rented")));
+    	} 
     }
 
 
@@ -251,7 +280,7 @@ public class Query {
         ResultSet cid_set = _list_plans_transaction_statement.executeQuery();
         while(cid_set.next()){
 		System.out.println("Rental Plan " + cid_set.getInt(1) + ": " + cid_set.getString(2));
-	}
+        }
 
     }
     
@@ -271,10 +300,83 @@ public class Query {
     public void transaction_rent(int cid, int mid) throws Exception {
         /* rend the movie mid to the customer cid */
         /* remember to enforce consistency ! */
+    	
+    	//clears and updates query search parameters
+    	_transaction_rent.clearParameters();
+    	_transaction_rent.setInt(1, mid);
+    	_transaction_rent.setInt(2, cid);
+    	
+    	ResultSet rent_set = _transaction_rent.executeQuery();
+    	
+    	//placement variables
+    	int number_rented = 0;
+    	int max_rentals = 0;
+    	String status = null;
+    	
+    	//update variables
+    	while(rent_set.next()){
+    		status = rent_set.getString("status");
+    		number_rented = rent_set.getInt("number_rented");
+    		max_rentals = rent_set.getInt("max_rentals");
+    	}
+    	
+    	//probably need to make check for errors if queries doesn't update variables right.
+    	
+    	//checks to see if allowed more rental && movie is free
+    	if( status.equals("open") && (number_rented < max_rentals) ){
+    		
+    		//performs update for rentals table
+    		_transaction_update_rentals.clearParameters();
+    		_transaction_update_rentals.setInt(1, cid);
+    		_transaction_update_rentals.setString(2, "closed");
+    		_transaction_update_rentals.setInt(1, mid);
+    		_transaction_update_rentals.executeUpdate();
+    		
+    		//performs update for customer table
+    		number_rented = number_rented++;
+    		_transaction_update_customer.clearParameters();
+    		_transaction_update_customer.setInt(1, number_rented);
+    		_transaction_update_customer.setInt(2, cid);
+    		_transaction_update_customer.executeUpdate();
+    	}
+    	else { System.out.println("Not allowed to rent, may have exceeded max or movie unavailable."); }
     }
 
     public void transaction_return(int cid, int mid) throws Exception {
         /* return the movie mid by the customer cid */
+    	
+    	//clears and updates new parameters
+    	_transaction_return.clearParameters();
+    	_transaction_return.setInt(1, mid);
+    	_transaction_return.setInt(2, cid);
+    	ResultSet _return_query = _transaction_return.executeQuery();
+    	
+    	//placeholders
+    	int past_customer = 0;
+    	int number_rented = 0;
+    	String status = "";
+    	
+    	//update variables
+    	while(_return_query.next()){
+    		past_customer = _return_query.getInt("uid");
+    		number_rented = _return_query.getInt("number_rented");
+    		status = _return_query.getString("status");
+    	}
+    	
+    	//checks to see if customer actually rented the movie
+    	if( (past_customer == cid) && status.equals("closed")){
+    		
+    		_transaction_return_rentals.clearParameters();
+    		_transaction_return_rentals.setInt(1, mid);
+    		_transaction_return_rentals.executeUpdate();
+    		
+    		number_rented = number_rented--;
+    		_transaction_return_customer.clearParameters();
+    		_transaction_return_customer.setInt(1, number_rented);
+    		_transaction_return_customer.setInt(2, cid);
+    		_transaction_return_customer.executeUpdate();
+    	}
+    	else{ System.out.println("You did not rent this movie."); }
     }
 
     public void transaction_fast_search(int cid, String movie_title)

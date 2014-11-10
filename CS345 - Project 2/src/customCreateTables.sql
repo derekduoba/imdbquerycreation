@@ -17,17 +17,44 @@ rid, customer uid, status
 -rid, movies, customer uid
 
 Rental plans
-pid, max rentals, fees, duration
+pid, name, max rentals, fees, duration
 */
 
+DROP TABLE LOGIN cascade;
+DROP TABLE CONTACTINFO cascade;
+DROP TABLE CUSTOMER cascade;
+DROP TABLE RENTALS cascade;
+DROP TABLE RENTALPLANS cascade;
+
+--//Added the name field
+CREATE TABLE RENTALPLANS(
+plid integer PRIMARY KEY,
+name VARCHAR(50) UNIQUE NOT NULL,
+max_rentals integer,
+cost float,
+months_subscribed integer
+);
+
+CREATE TABLE CUSTOMER(
+uid integer PRIMARY KEY,
+plid integer REFERENCES RENTALPLANS (plid),
+number_rented integer
+);
+
+CREATE TABLE RENTALS(
+rid integer UNIQUE,
+uid integer REFERENCES CUSTOMER (uid),
+status VARCHAR(10) CHECK (status = 'open' or status = 'closed')
+);
+
 CREATE TABLE LOGIN(
-lid integer FOREIGN KEY REFRENCES Customer (uid),
+lid integer REFERENCES CUSTOMER (uid),
 username varchar(30),
 password varchar(30)
 );
 
-CREATE TABLE ContactInfo(
-cid integer FOREIGN KEY REFRENCES Customer (uid),
+CREATE TABLE CONTACTINFO(
+cid integer REFERENCES CUSTOMER (uid),
 firstname varChar(30),
 lastname varChar(30),
 email varChar(30),
@@ -36,25 +63,9 @@ city varChar(30),
 state varchar(30)
 );
 
-CREATE TABLE Customer(
-uid integer PRIMARY KEY,
-plid varchar(30) FOREIGN KEY REFRENCES RENTALPLANS (plid),
-rid varchar(30) FOREIGN KEY REFRENCES RENTALS (rid),
-number_rented integer,
-max_rentals integer
-);
+INSERT INTO RENTALPLANS VALUES(1, 'premium', 20, 19.99, 6);
+INSERT INTO RENTALPLANS VALUES(2, 'gold', 10, 9.99, 6);
 
-CREATE TABLE RENTALS(
-rid integer UNIQUE,
-uid FOREIGN KEY REFRENCES Customer (uid),
-status VARCHAR(10) CHECK (status = 'open' or status = 'closed')
-);
+INSERT INTO CUSTOMER VALUES(1, 1, 3);
 
-//Added the name field
-CREATE TABLE RENTALPLANS(
-plid integer PRIMARY KEY,
-name VARCHAR(50) UNIQUE NOT NULL,
-max_rentals integer,
-cost float,
-months_subscribed integer
-);
+INSERT INTO LOGIN VALUES(1, 'Tim', 'secret');
