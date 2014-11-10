@@ -59,7 +59,21 @@ public class Query {
 
     private String _update_plan_sql = "UPDATE CUSTOMERS SET plid = pid";
     private PreparedStatement _update_plan_statement;
-
+    
+    // Fast Search queries
+    
+    //return only the movie information (id, title, year) for all movies matching a keyword
+    private String _list_movie_details_sql = "SELECT m.id, m.name, m.year FROM movie as m WHERE LOWER(m.name) like LOWER(?) ORDER BY m.id";
+    private PreparedStatement _list_movie_details_statement;
+    
+    // return the movie's actors
+    private String _list_movie_actors_sql = "SELECT a.fname, a.lname FROM actor as a INNER JOIN casts as c ON a.id=c.pid INNER JOIN movie as m ON c.mid=m.id WHERE LOWER(m.name) like LOWER(?) ORDER BY m.id";
+    private PreparedStatement _list_movie_actors_statement;
+    
+    // return the movie's directors
+    private String _list_movie_directors_sql = "SELECT d1.fname, d1.lanme FROM directors as d1 INNER JOIN movie_directors as d2 ON d1.id=d2.did INNER JOIN movie as m ON m.id=d2.mid WHERE LOWER(m.name) like LOWER(?) ORDER BY m.id";
+    private PreparedStatement _list_movie_directors_statement;
+    		
     public Query() {
     }
 
@@ -115,8 +129,12 @@ public class Query {
 
         /* add here more prepare statements for all the other queries you need */
         _list_plans_transaction_statement = _customer_db.prepareStatement(_transaction_list_plans_sql);
-	_list_user_rentals_statement = _customer_db.prepareStatement(_list_user_rentals_sql);
-	_choose_plan_statement = _customer_db.prepareStatement(_choose_plan_sql); 
+        _list_user_rentals_statement = _customer_db.prepareStatement(_list_user_rentals_sql);
+        _choose_plan_statement = _customer_db.prepareStatement(_choose_plan_sql);
+	
+        _list_movie_details_statement = _imdb.prepareStatement(_list_movie_details_sql);
+        _list_movie_actors_statement = _imdb.prepareStatement(_list_movie_actors_sql);
+        _list_movie_directors_statement = _imdb.prepareStatement(_list_movie_directors_sql);
         /* . . . . . . */
     }
 
@@ -262,6 +280,11 @@ public class Query {
            Needs to run three SQL queries: (a) movies, (b) movies join directors, (c) movies join actors
            Answers are sorted by mid.
            Then merge-joins the three answer sets */
+    	ResultSet movie_titles = _list_movie_details_statement.executeQuery();
+    	ResultSet actor_names = _list_movie_actors_statement.executeQuery();
+    	ResultSet movie_directors = _list_movie_directors_statement.executeQuery();
+    	
+    	// TODO: Merge all resultsets together
     }
 
 }
