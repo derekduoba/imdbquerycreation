@@ -35,7 +35,7 @@ public class Query {
 
     private String _customer_login_sql = "SELECT L.username, L.password FROM LOGIN L," 
 				+ "CUSTOMER C WHERE username = ? and password = ?"
-				+ "and L.lid = C.cid";
+				+ "and L.lid = C.uid";
     private PreparedStatement _customer_login_statement;
 
     private String _begin_transaction_read_write_sql = "BEGIN TRANSACTION READ WRITE";
