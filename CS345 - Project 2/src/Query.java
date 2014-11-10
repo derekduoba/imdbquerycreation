@@ -59,6 +59,7 @@ public class Query {
 
     private String _update_plan_sql = "UPDATE CUSTOMERS SET plid = pid";
     private PreparedStatement _update_plan_statement;
+
     
     // Fast Search queries
     
@@ -129,12 +130,14 @@ public class Query {
 
         /* add here more prepare statements for all the other queries you need */
         _list_plans_transaction_statement = _customer_db.prepareStatement(_transaction_list_plans_sql);
+
         _list_user_rentals_statement = _customer_db.prepareStatement(_list_user_rentals_sql);
         _choose_plan_statement = _customer_db.prepareStatement(_choose_plan_sql);
 	
         _list_movie_details_statement = _imdb.prepareStatement(_list_movie_details_sql);
         _list_movie_actors_statement = _imdb.prepareStatement(_list_movie_actors_sql);
         _list_movie_directors_statement = _imdb.prepareStatement(_list_movie_directors_sql);
+
         /* . . . . . . */
     }
 
