@@ -51,7 +51,7 @@ public class Query {
     private String _transaction_list_plans_sql = "SELECT * FROM RENTALPLANS";
     private PreparedStatement _list_plans_transaction_statement;
 
-    private String _list_user_rentals_sql = "SELECT C.uid FROM CUSTOMERS C, MOVIERENTALS M WHERE C.cid = M.cid;"
+    private String _list_user_rentals_sql = "SELECT C.uid FROM CUSTOMERS C, MOVIERENTALS M WHERE C.cid = M.cid";
     private PreparedStatement _list_user_rentals_statement;
 
     private String _choose_plan_sql = "SELECT * FROM RENTALPLANS WHERE ? = name";
@@ -218,7 +218,7 @@ public class Query {
         /* updates the customer's plan to pid: UPDATE customers SET plid = pid */
         /* remember to enforce consistency ! */
 	_choose_plan_statement.clearParameters();
-        _choose_plan_statement.setString(1, '%' + pid + '%');
+        _choose_plan_statement.setInt(1, '%' + pid + '%');
 	ResultSet plan_set = _choose_plan_statement.executeQuery();
 	
     }
@@ -237,8 +237,9 @@ public class Query {
     public void transaction_list_user_rentals(int cid) throws Exception {
         /* println all movies rented by the current user*/
 
-	_list_user_rentals_transaction_statement.clearParameters();
-	_list_user_rentals_transaction_statement.setString();
+	_list_user_rentals_statement.clearParameters();
+	//fixing soon, leaving code compilable
+	//_list_user_rentals_statement.setString();
         ResultSet cid_set = _list_plans_transaction_statement.executeQuery();
         while(cid_set.next()){
 		System.out.println("Rented Movies: " + cid_set.getString(2));
