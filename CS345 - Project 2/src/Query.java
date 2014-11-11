@@ -63,7 +63,8 @@ public class Query {
     private PreparedStatement _update_plan_statement;
     
     //Personal Data queries
-	private String _transaction_personal_data_query = "select i.firstname, i.lastname, c.number_rented, c.max_rentals from ContactInfo i, Customer c where i.cid = ? and c.uid = ?";
+    //Altered the query to access the max_rentals property from RentalPlans instead of Customer table
+	private String _transaction_personal_data_query = "select i.firstname, i.lastname, c.number_rented, r.max_rentals from ContactInfo i, Customer c, RentalPlans r where i.cid = ? and c.uid = ? and r.plid = c.plid";
 	private PreparedStatement _transaction_personal_query;
     
     // transaction rent queries
@@ -347,6 +348,7 @@ public class Query {
 		_list_movies_rented_statement.clearParameters();
 		_list_movies_rented_statement.setInt(1, cid_set.getInt(1));
 		ResultSet mid_set = _list_movies_rented_statement.executeQuery();
+		mid_set.next();
 		System.out.println("\t" + mid_set.getString(1));
 	}
 
