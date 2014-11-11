@@ -53,7 +53,7 @@ public class Query {
     private PreparedStatement _list_plans_transaction_statement;
 
     //User Rentals
-    private String _list_user_rentals_sql = "SELECT R.rid FROM RENTALS R WHERE ? = R.cid AND R.status = 'open'";
+    private String _list_user_rentals_sql = "SELECT R.rid FROM RENTALS R WHERE R.uid = ?";
     private PreparedStatement _list_user_rentals_statement;
 
     private String _list_movies_rented_sql = "SELECT name FROM MOVIE M WHERE M.id = ?";
@@ -301,11 +301,14 @@ public class Query {
         /* println all movies rented by the current user*/
 
 	_list_user_rentals_statement.clearParameters();
-	//TODO: FIX THIS
-	//_list_user_rentals_statement.setString();
+	_list_user_rentals_statement.setInt(1, cid);
         ResultSet cid_set = _list_user_rentals_statement.executeQuery();
+	System.out.println("Your Rented Movies: "
         while(cid_set.next()){
-		System.out.println("Rented Movies: " + cid_set.getString(2));
+		_list_movies_rented_statement.clearParameters();
+		_list_movies_rented_statement.setInt(1, cid_set.getInt());
+		ResultSet mid_set = _list_movies_rented_statement.executeQuery();
+		System.out.println("\t" + mid_set.getString(2));
 	}
 
     }
