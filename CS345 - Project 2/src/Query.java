@@ -59,7 +59,7 @@ public class Query {
     private PreparedStatement _list_movies_rented_statement;
 
     //Choose Plan
-    private String _update_plan_sql = "UPDATE CUSTOMER SET plid = ? WHERE cid = ?";
+    private String _update_plan_sql = "UPDATE CUSTOMER SET plid = ? WHERE uid = ?";
     private PreparedStatement _update_plan_statement;
     
     //Personal Data queries
@@ -317,7 +317,7 @@ public class Query {
     }
 
     public synchronized void transaction_choose_plan(int cid, int plid) throws Exception {
-        /* updates the customer's plan to pid: UPDATE CUSTOMER SET plid = ? WHERE cid = ? */
+        /* updates the customer's plan to pid: UPDATE CUSTOMER SET plid = ? WHERE uid = ? */
         /* remember to enforce consistency ! */
     	_update_plan_statement.clearParameters();
         _update_plan_statement.setInt(1, plid);
