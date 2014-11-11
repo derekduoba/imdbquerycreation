@@ -91,11 +91,11 @@ public class Query {
     private PreparedStatement _list_movie_details_statement;
     
     // return the movie's actors
-    private String _list_movie_actors_sql = "SELECT a.fname, a.lname FROM actor as a INNER JOIN casts as c ON a.id=c.pid INNER JOIN movie as m ON c.mid=m.id WHERE LOWER(m.name) like LOWER(?) ORDER BY m.id";
+    private String _list_movie_actors_sql = "SELECT m.id, a.fname, a.lname FROM actor as a INNER JOIN casts as c ON a.id=c.pid INNER JOIN movie as m ON c.mid=m.id WHERE LOWER(m.name) like LOWER(?) ORDER BY m.id";
     private PreparedStatement _list_movie_actors_statement;
     
     // return the movie's directors
-    private String _list_movie_directors_sql = "SELECT d1.fname, d1.lname FROM directors as d1 INNER JOIN movie_directors as d2 ON d1.id=d2.did INNER JOIN movie as m ON m.id=d2.mid WHERE LOWER(m.name) like LOWER(?) ORDER BY m.id";
+    private String _list_movie_directors_sql = "SELECT m.id, d1.fname, d1.lname FROM directors as d1 INNER JOIN movie_directors as d2 ON d1.id=d2.did INNER JOIN movie as m ON m.id=d2.mid WHERE LOWER(m.name) like LOWER(?) ORDER BY m.id";
     private PreparedStatement _list_movie_directors_statement;
     		
     public Query() {
@@ -158,8 +158,8 @@ public class Query {
         _choose_plan_statement = _customer_db.prepareStatement(_choose_plan_sql);
 	
         _list_movie_details_statement = _imdb.prepareStatement(_list_movie_details_sql);
-        _list_movie_actors_statement = _imdb.prepareStatement(_list_movie_actors_sql);
-        _list_movie_directors_statement = _imdb.prepareStatement(_list_movie_directors_sql);
+        _list_movie_actors_statement = _imdb.prepareStatement(_list_movie_actors_sql, ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_UPDATABLE);
+        _list_movie_directors_statement = _imdb.prepareStatement(_list_movie_directors_sql, ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_UPDATABLE);
 
         /* . . . . . . */
     }
@@ -395,7 +395,27 @@ public class Query {
     	ResultSet actor_names = _list_movie_actors_statement.executeQuery();
     	ResultSet movie_directors = _list_movie_directors_statement.executeQuery();
     	
-    	// TODO: Merge all resultsets together
+    	while (movie_titles.next()) {
+    		int currentID = movie_titles.getInt(1);
+    		
+    		System.out.println("Movie name: " + movie_titles.getInt(1) + " " + movie_titles.getString(2));
+    		System.out.println("Actor(s):");
+    		while (actor_names.next()) {
+    			if (currentID == actor_names.getInt(1)) {
+    				System.out.println(actor_names.getString(2) + " " + actor_names.getString(3));
+    			}
+    		}
+    		actor_names.first();
+    		
+    		while (movie_directors.next()) {
+    			if (currentID == movie_directors.getInt(1)) {
+    				System.out.println("Director:" + movie_directors.getString(2) + " " + movie_directors.getString(3));
+    			}
+    		}
+    		movie_directors.first();
+    		
+    		System.out.println();
+    	}
     }
 
 }
