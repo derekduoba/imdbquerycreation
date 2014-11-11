@@ -37,6 +37,7 @@ months_subscribed integer
 
 CREATE TABLE CUSTOMER(
 uid integer PRIMARY KEY,
+number_rented integer,
 plid integer REFERENCES RENTALPLANS (plid)
 );
 
@@ -66,7 +67,9 @@ state varchar(30)
 INSERT INTO RENTALPLANS VALUES(1, 'premium', 20, 19.99, 6);
 INSERT INTO RENTALPLANS VALUES(2, 'gold', 10, 9.99, 6);
 
-INSERT INTO CUSTOMER VALUES(1, 1);
+INSERT INTO CUSTOMER VALUES(1, 0, 1);
+
+INSERT into CONTACTINFO VALUES(1, 'Tim', 'Secrets', 'TSecrets@sql', '111 Fake Street', 'Amherst', 'MA');
 
 INSERT INTO LOGIN VALUES(1, 'Tim', 'secret');
 
