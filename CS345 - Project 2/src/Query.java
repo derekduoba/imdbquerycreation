@@ -25,7 +25,7 @@ public class Query {
 
     // Canned queries
 
-    private String _search_sql = "SELECT * FROM movie WHERE name like ? ORDER BY id";
+    private String _search_sql = "SELECT * FROM movie WHERE LOWER(name) like LOWER(?) ORDER BY id";
     private PreparedStatement _search_statement;
 
     private String _director_mid_sql = "SELECT y.* "
@@ -35,7 +35,6 @@ public class Query {
 
     private String _customer_login_sql = "SELECT L.lid FROM LOGIN L" 
 				+ " WHERE username = ? and password = ?";
-    
     private PreparedStatement _customer_login_statement;
 
     private String _begin_transaction_read_write_sql = "BEGIN TRANSACTION READ WRITE";
@@ -86,7 +85,18 @@ public class Query {
 
 	private String _transaction_return_customer_update = "update customer set number_rented = ? where uid = ?";
 	private PreparedStatement _transaction_return_customer;
-    
+	
+    // Regular Search queries
+	private String _actor_mid_sql = "SELECT A.fname, A.lname "
+    				 + "FROM actor A, casts C "
+    				 + "WHERE C.mid = ? AND C.pid = A.id";
+    private PreparedStatement _actor_mid_statement;
+	
+    private String _rental_mid_sql = "SELECT * "
+    				 + "FROM rentals "
+    				 + "WHERE rid = ?";
+	private PreparedStatement _rental_mid_statement;
+	
     // Fast Search queries
     
     //return only the movie information (id, title, year) for all movies matching a keyword
@@ -155,6 +165,10 @@ public class Query {
          
 
         /* add here more prepare statements for all the other queries you need */
+	//regular search queries
+		_actor_mid_statement = _imdb.prepareStatement(_actor_mid_sql);
+        _rental_mid_statement = _customer_db.prepareStatement(_rental_mid_sql);
+		
 	//list rental plans
         _list_plans_transaction_statement = _customer_db.prepareStatement(_transaction_list_plans_sql);
 
@@ -268,8 +282,35 @@ public class Query {
                         + " " + director_set.getString(2));
             }
             director_set.close();
+            
             /* now you need to retrieve the actors, in the same manner */
+            _actor_mid_statement.clearParameters();
+            _actor_mid_statement.setInt(1, mid);
+            ResultSet actor_set = _actor_mid_statement.executeQuery();
+            if (actor_set.next()) // This if makes sure "Actors" is printed only if there are one or more
+            {
+            	System.out.println("\t\tActors:"); 
+            	System.out.println("\t\t\t" + actor_set.getString(1) + " " + actor_set.getString(2));}
+            while (actor_set.next()){
+            	System.out.println("\t\t\t" + actor_set.getString(1) + " " + actor_set.getString(2));
+            }
+            actor_set.close();
+            
             /* then you have to find the status: of "AVAILABLE" "YOU HAVE IT", "UNAVAILABLE" */
+            _rental_mid_statement.clearParameters();
+            _rental_mid_statement.setInt(1, mid);
+            ResultSet rental_set = _rental_mid_statement.executeQuery();
+            if(rental_set.next()){
+            	int rental_uid = rental_set.getInt(2);
+            	
+            	if (rental_uid == cid) {
+            		System.out.println("\t\tStatus: YOU HAVE IT");
+            	} else {
+            		System.out.println("\t\tStatus: UNAVAILABLE");
+            	}
+            } else {
+            	System.out.println("\t\tStatus: AVAILABLE");
+            }
         }
         System.out.println();
     }
