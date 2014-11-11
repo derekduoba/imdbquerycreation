@@ -163,7 +163,7 @@ public class Query {
 
 	//list movies a user rented
         _list_user_rentals_statement = _customer_db.prepareStatement(_list_user_rentals_sql);
-	_list_movies_rented_statement = _imdb_db.prepareStatement(_list_movies_rented_sql);
+	_list_movies_rented_statement = _imdb.prepareStatement(_list_movies_rented_sql);
 
 	//User chooses a rental plan
         _choose_plan_statement = _customer_db.prepareStatement(_choose_plan_sql);
@@ -301,8 +301,8 @@ public class Query {
         /* println all movies rented by the current user*/
 
 	_list_user_rentals_statement.clearParameters();
-
-	_list_user_rentals_statement.setString();
+	//TODO: FIX THIS
+	//_list_user_rentals_statement.setString();
         ResultSet cid_set = _list_user_rentals_statement.executeQuery();
         while(cid_set.next()){
 		System.out.println("Rented Movies: " + cid_set.getString(2));
