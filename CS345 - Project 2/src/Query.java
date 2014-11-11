@@ -348,8 +348,8 @@ public class Query {
 		_list_movies_rented_statement.clearParameters();
 		_list_movies_rented_statement.setInt(1, cid_set.getInt(1));
 		ResultSet mid_set = _list_movies_rented_statement.executeQuery();
-		mid_set.next();
-		System.out.println("\t" + mid_set.getString(1));
+		if(mid_set.next()) 
+			System.out.println("\t" + mid_set.getString(1));
 	}
 
     }
