@@ -322,7 +322,7 @@ public class Query {
     	_update_plan_statement.clearParameters();
         _update_plan_statement.setInt(1, plid);
         _update_plan_statement.setInt(2, cid);
-        _update_plan_statement.executeQuery();
+        _update_plan_statement.executeUpdate();
 	
     }
 
