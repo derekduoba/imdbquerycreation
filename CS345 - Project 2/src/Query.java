@@ -339,6 +339,8 @@ public class Query {
     
     public void transaction_list_user_rentals(int cid) throws Exception {
         /* println all movies rented by the current user*/
+	//lists a user's current rental: SELECT R.rid FROM RENTALS R WHERE R.uid = ?
+	//list movies found: SELECT name FROM MOVIE M WHERE M.id = ?"
 
 	_list_user_rentals_statement.clearParameters();
 	_list_user_rentals_statement.setInt(1, cid);
@@ -355,7 +357,7 @@ public class Query {
     }
 
     public void transaction_rent(int cid, int mid) throws Exception {
-        /* rend the movie mid to the customer cid */
+        /* rent the movie mid to the customer cid */
         /* remember to enforce consistency ! */
     	
     	//clears and updates query search parameters
