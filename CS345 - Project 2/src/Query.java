@@ -48,12 +48,18 @@ public class Query {
     private PreparedStatement _rollback_transaction_statement;
 
     // Created queries
+    //List plans
     private String _transaction_list_plans_sql = "SELECT * FROM RENTALPLANS";
     private PreparedStatement _list_plans_transaction_statement;
 
-    private String _list_user_rentals_sql = "SELECT C.uid FROM CUSTOMERS C, MOVIERENTALS M WHERE C.cid = M.cid";
+    //User Rentals
+    private String _list_user_rentals_sql = "SELECT R.rid FROM RENTALS R WHERE ? = R.cid AND R.status = 'open'";
     private PreparedStatement _list_user_rentals_statement;
 
+    private String _list_movies_rented_sql = "SELECT name FROM MOVIE M WHERE M.id = ?";
+    private PreparedStatement _list_movies_rented_statement;
+
+    //Choose Plan
     private String _choose_plan_sql = "SELECT * FROM RENTALPLANS WHERE ? = name";
     private PreparedStatement _choose_plan_statement;
 
@@ -152,9 +158,14 @@ public class Query {
          
 
         /* add here more prepare statements for all the other queries you need */
+	//list rental plans
         _list_plans_transaction_statement = _customer_db.prepareStatement(_transaction_list_plans_sql);
 
+	//list movies a user rented
         _list_user_rentals_statement = _customer_db.prepareStatement(_list_user_rentals_sql);
+	_list_movies_rented_statement = _imdb_db.prepareStatement(_list_movies_rented_sql);
+
+	//User chooses a rental plan
         _choose_plan_statement = _customer_db.prepareStatement(_choose_plan_sql);
 	
         _list_movie_details_statement = _imdb.prepareStatement(_list_movie_details_sql);
@@ -290,9 +301,9 @@ public class Query {
         /* println all movies rented by the current user*/
 
 	_list_user_rentals_statement.clearParameters();
-	//fixing soon, leaving code compilable
-	//_list_user_rentals_statement.setString();
-        ResultSet cid_set = _list_plans_transaction_statement.executeQuery();
+
+	_list_user_rentals_statement.setString();
+        ResultSet cid_set = _list_user_rentals_statement.executeQuery();
         while(cid_set.next()){
 		System.out.println("Rented Movies: " + cid_set.getString(2));
 	}

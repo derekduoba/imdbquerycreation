@@ -26,7 +26,7 @@ DROP TABLE CUSTOMER cascade;
 DROP TABLE RENTALS cascade;
 DROP TABLE RENTALPLANS cascade;
 
---//Added the name field
+--Added the name field
 CREATE TABLE RENTALPLANS(
 plid integer PRIMARY KEY,
 name VARCHAR(50) UNIQUE NOT NULL,
@@ -38,13 +38,13 @@ months_subscribed integer
 CREATE TABLE CUSTOMER(
 uid integer PRIMARY KEY,
 plid integer REFERENCES RENTALPLANS (plid),
-number_rented integer
 );
 
+--Need to match imdb movie id to rid
+--Insert and Remove tuples to denote availability
 CREATE TABLE RENTALS(
-rid integer UNIQUE,
-uid integer REFERENCES CUSTOMER (uid),
-status VARCHAR(10) CHECK (status = 'open' or status = 'closed')
+rid integer PRIMARY KEY,
+uid integer REFERENCES CUSTOMER (uid)
 );
 
 CREATE TABLE LOGIN(
@@ -66,6 +66,10 @@ state varchar(30)
 INSERT INTO RENTALPLANS VALUES(1, 'premium', 20, 19.99, 6);
 INSERT INTO RENTALPLANS VALUES(2, 'gold', 10, 9.99, 6);
 
-INSERT INTO CUSTOMER VALUES(1, 1, 3);
+INSERT INTO CUSTOMER VALUES(1, 1);
 
 INSERT INTO LOGIN VALUES(1, 'Tim', 'secret');
+
+INSERT INTO RENTALS VALUE(24311, 1);
+INSERT INTO RENTALS VALUE(26545, 1);
+INSERT INTO RENTALS VALUE(243, 1);
