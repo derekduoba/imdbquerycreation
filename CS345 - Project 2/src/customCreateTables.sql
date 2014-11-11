@@ -37,7 +37,7 @@ months_subscribed integer
 
 CREATE TABLE CUSTOMER(
 uid integer PRIMARY KEY,
-plid integer REFERENCES RENTALPLANS (plid),
+plid integer REFERENCES RENTALPLANS (plid)
 );
 
 --Need to match imdb movie id to rid
