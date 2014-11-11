@@ -163,7 +163,7 @@ public class Query {
 	_list_movies_rented_statement = _imdb.prepareStatement(_list_movies_rented_sql);
 
 	//User chooses a rental plan
-        _choose_plan_statement = _customer_db.prepareStatement(_choose_plan_sql);
+        _update_plan_statement = _customer_db.prepareStatement(_update_plan_sql);
 	
         _list_movie_details_statement = _imdb.prepareStatement(_list_movie_details_sql);
         _list_movie_actors_statement = _imdb.prepareStatement(_list_movie_actors_sql, ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_UPDATABLE);
@@ -277,10 +277,10 @@ public class Query {
     public synchronized void transaction_update_plan(int cid, int plid) throws Exception {
         /* updates the customer's plan to pid: UPDATE customers SET plid = pid */
         /* remember to enforce consistency ! */
-	_choose_plan_statement.clearParameters();
-        _choose_plan_statement.setInt(1, plid);
-        _choose_plan_statement.setInt(2, cid);
-	_choose_plan_statement.executeQuery();
+    	_update_plan_statement.clearParameters();
+        _update_plan_statement.setInt(1, plid);
+        _update_plan_statement.setInt(2, cid);
+        _update_plan_statement.executeQuery();
 	
     }
 
@@ -301,10 +301,10 @@ public class Query {
 	_list_user_rentals_statement.clearParameters();
 	_list_user_rentals_statement.setInt(1, cid);
         ResultSet cid_set = _list_user_rentals_statement.executeQuery();
-	System.out.println("Your Rented Movies: "
+	System.out.println("Your Rented Movies: ");
         while(cid_set.next()){
 		_list_movies_rented_statement.clearParameters();
-		_list_movies_rented_statement.setInt(1, cid_set.getInt());
+		_list_movies_rented_statement.setInt(1, cid_set.getInt(1));
 		ResultSet mid_set = _list_movies_rented_statement.executeQuery();
 		System.out.println("\t" + mid_set.getString(1));
 	}
