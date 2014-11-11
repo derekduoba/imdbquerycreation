@@ -274,7 +274,7 @@ public class Query {
         System.out.println();
     }
 
-    public synchronized void transaction_update_plan(int cid, int plid) throws Exception {
+    public synchronized void transaction_choose_plan(int cid, int plid) throws Exception {
         /* updates the customer's plan to pid: UPDATE customers SET plid = pid */
         /* remember to enforce consistency ! */
     	_update_plan_statement.clearParameters();
