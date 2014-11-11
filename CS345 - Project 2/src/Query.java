@@ -59,10 +59,7 @@ public class Query {
     private PreparedStatement _list_movies_rented_statement;
 
     //Choose Plan
-    private String _choose_plan_sql = "SELECT * FROM RENTALPLANS WHERE ? = name";
-    private PreparedStatement _choose_plan_statement;
-
-    private String _update_plan_sql = "UPDATE CUSTOMERS SET plid = pid";
+    private String _update_plan_sql = "UPDATE CUSTOMERS SET plid = ? WHERE cid = ?";
     private PreparedStatement _update_plan_statement;
     
     //Personal Data queries
@@ -73,7 +70,7 @@ public class Query {
 	private String _transaction_rent_query = "select r.rid, r.status, c.number_rented, c.max_rentals from Rentals r, Customer c where r.rid = ? and c.uid = ?";
 	private PreparedStatement _transaction_rent;
 	
-	private String _transaction_rent_update_rentals = "update rentals set uid = ?, status = '?' where rid = ?;";
+	private String _transaction_rent_update_rentals = "update rentals set uid = ?, status = '?' where rid = ?";
 	private PreparedStatement _transaction_update_rentals;
 	
 	private String _transaction_rent_update_customer = "update customer set number_rented = ? where uid = ?";
@@ -318,12 +315,13 @@ public class Query {
         System.out.println();
     }
 
-    public synchronized void transaction_choose_plan(int cid, int pid) throws Exception {
+    public synchronized void transaction_update_plan(int cid, int plid) throws Exception {
         /* updates the customer's plan to pid: UPDATE customers SET plid = pid */
         /* remember to enforce consistency ! */
 	_choose_plan_statement.clearParameters();
-        _choose_plan_statement.setInt(1, '%' + pid + '%');
-	ResultSet plan_set = _choose_plan_statement.executeQuery();
+        _choose_plan_statement.setInt(1, plid);
+        _choose_plan_statement.setInt(2, cid);
+	_choose_plan_statement.executeQuery();
 	
     }
 
@@ -349,7 +347,7 @@ public class Query {
 		_list_movies_rented_statement.clearParameters();
 		_list_movies_rented_statement.setInt(1, cid_set.getInt());
 		ResultSet mid_set = _list_movies_rented_statement.executeQuery();
-		System.out.println("\t" + mid_set.getString(2));
+		System.out.println("\t" + mid_set.getString(1));
 	}
 
     }
