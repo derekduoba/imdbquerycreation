@@ -67,7 +67,7 @@ state varchar(30)
 INSERT INTO RENTALPLANS VALUES(1, 'premium', 20, 19.99, 6);
 INSERT INTO RENTALPLANS VALUES(2, 'gold', 10, 9.99, 6);
 
-INSERT INTO CUSTOMER VALUES(1, 0, 1);
+INSERT INTO CUSTOMER VALUES(1, 3, 1);
 
 INSERT into CONTACTINFO VALUES(1, 'Tim', 'Secrets', 'TSecrets@sql', '111 Fake Street', 'Amherst', 'MA');
 
