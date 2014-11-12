@@ -106,7 +106,7 @@ public class Query {
 	private PreparedStatement _transaction_update_customer;
 	
 	//transaction return queries
-	private String _transaction_return_rental_update = "update Rentals set uid = NULL where rid = ?";
+    private String _transaction_return_rental_update = "delete from Rentals where rid = ?";
 	private PreparedStatement _transaction_return_rentals;
 
 	private String _transaction_return_customer_update = "update customer set number_rented = ? where uid = ?";
@@ -206,13 +206,13 @@ public class Query {
     /* suggested helper functions  */
     public int helper_compute_remaining_rentals(int cid) throws Exception {
     	int max_rentals = 0;
-    	int number_rented = 0;
+    	int number_rented = Helper_number(cid);
     	
     	_helper_rentals.clearParameters();
     	_helper_rentals.setInt(1, cid);
     	ResultSet rentals = _helper_rentals.executeQuery();
+    	while( rentals.next() ){ max_rentals = rentals.getInt("max_rentals");} 
     	
-    	while( rentals.next() ){ max_rentals = rentals.getInt("max_rentals"); number_rented = rentals.getInt("number_rented"); } 
         return(max_rentals-number_rented);
     }
     
@@ -224,6 +224,41 @@ public class Query {
 	int temp = 0;
 	while(one.next()){ temp = one.getInt("number_rented"); } 
 	return temp;
+    }
+    
+    public int Helper_number(int cid) throws Exception{
+    	String query = "select count(uid) as count from rentals where uid = ?";
+    	PreparedStatement number = _customer_db.prepareStatement(query);
+    	number.clearParameters();
+    	number.setInt(1, cid);
+    	ResultSet go = number.executeQuery();
+    	int ret = 0;
+    	while(go.next()){ ret = go.getInt("count"); }
+    	return ret;
+    }
+    
+    public boolean helper_check_if_movie(int mid) throws Exception{
+    	String query = "select count(id) as count from movie where id = ?";
+    	PreparedStatement go = _imdb.prepareStatement(query);
+    	go.clearParameters();
+    	go.setInt(1, mid);
+    	ResultSet run = go.executeQuery();
+    	int temp = 0;
+    	while(run.next()){ temp = run.getInt("count"); }
+    	if(temp==1){ return true; }
+    	else{ return false; }
+    }
+    
+    public boolean helper_check_movie(int mid) throws Exception {
+        String check = "select rid from rentals where rid = ?";
+        PreparedStatement run = _customer_db.prepareStatement(check);
+        
+        run.clearParameters();
+        run.setInt(1,mid);
+        ResultSet go = run.executeQuery();
+        
+        if(go.next()){ return true; }
+        else{ return false; }
     }
 
     public String helper_compute_customer_name(int cid) throws Exception {
@@ -249,11 +284,6 @@ public class Query {
 
     public boolean helper_check_plan(int plan_id) throws Exception {
         /* is plan_id a valid plan id ?  you have to figure out */
-        return true;
-    }
-
-    public boolean helper_check_movie(int mid) throws Exception {
-        /* is mid a valid movie id ? you have to figure out  */
         return true;
     }
 
@@ -383,20 +413,11 @@ public class Query {
     public void transaction_rent(int cid, int mid) throws Exception {
         /* rend the movie mid to the customer cid */
         /* remember to enforce consistency ! */
-    	
+
     	int number_rented = helper_compute_remaining_rentals(cid);
-    	String status = "";
-    	
-    	//for check if rental is free
-    	_transaction_rent.clearParameters();
-    	_transaction_rent.setInt(1, mid);
-    	ResultSet open = _transaction_rent.executeQuery();
-    	while(open.next()){
-    		status = open.getString("uid");
-    	}
 
     	//checks to see if allowed more rental && movie is free
-    	if(( number_rented != 0 ) && (status==null || status=="")){
+    	if((helper_check_if_movie(mid)) && ( number_rented != 0 ) && (!helper_check_movie(mid))){
 
     		//performs update for rentals table
     		_transaction_update_rentals.clearParameters();
@@ -412,18 +433,19 @@ public class Query {
     		_transaction_update_customer.setInt(1, temp);
     		_transaction_update_customer.setInt(2, cid);
     		_transaction_update_customer.executeUpdate();
-    		
     	}
+    	else if(!helper_check_if_movie(mid)){ System.out.println("Movie does not exist in database."); }
     	else if(helper_who_has_this_movie(mid)==cid){ System.out.println("You are currently renting this movie!"); }
     	else if(number_rented==0){ System.out.println("You have exceeded max rentals, please return a movie."); }
-    	else { System.out.println("I'm sorry, the movie has been rented out by another customer. Please try again later."); }
+    	else if(helper_check_movie(mid)){ System.out.println("The movie has been rented out by another customer. Please try again later."); }
+    	
     }
 
     public void transaction_return(int cid, int mid) throws Exception {
         /* return the movie mid by the customer cid */
     	
     	//checks to see if customer actually rented the movie
-    	if( (helper_who_has_this_movie(mid) == cid) ){
+    	if( (helper_check_movie(mid)) && (helper_who_has_this_movie(mid) == cid) ){
     		
     		_transaction_return_rentals.clearParameters();
     		_transaction_return_rentals.setInt(1, mid);
