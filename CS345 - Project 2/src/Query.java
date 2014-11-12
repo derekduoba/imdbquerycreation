@@ -445,9 +445,9 @@ public class Query {
            Needs to run three SQL queries: (a) movies, (b) movies join directors, (c) movies join actors
            Answers are sorted by mid.
            Then merge-joins the three answer sets */
-    	_list_movie_details_statement.setString(1, movie_title);
-    	_list_movie_actors_statement.setString(1, movie_title);
-    	_list_movie_directors_statement.setString(1, movie_title);
+    	_list_movie_details_statement.setString(1, '%' + movie_title + '%');
+    	_list_movie_actors_statement.setString(1, '%' + movie_title + '%');
+    	_list_movie_directors_statement.setString(1, '%' + movie_title + '%');
     	
     	ResultSet movie_titles = _list_movie_details_statement.executeQuery();
     	ResultSet actor_names = _list_movie_actors_statement.executeQuery();
@@ -456,21 +456,41 @@ public class Query {
     	while (movie_titles.next()) {
     		int currentID = movie_titles.getInt(1);
     		
-    		System.out.println("Movie name: " + movie_titles.getInt(1) + " " + movie_titles.getString(2));
-    		System.out.println("Actor(s):");
+    		System.out.println("ID: " + movie_titles.getInt(1) + " NAME: " + movie_titles.getString(2) + " YEAR: " + movie_titles.getString(3));
+    		
+    		while (movie_directors.next()) {
+    			if (currentID == movie_directors.getInt(1)) {
+    				System.out.println("DIRECTOR: " + movie_directors.getString(2) + " " + movie_directors.getString(3));
+    			}
+    		}
+    		movie_directors.first();
+    		
+    		System.out.println("ACTOR(S):");
     		while (actor_names.next()) {
     			if (currentID == actor_names.getInt(1)) {
-    				System.out.println(actor_names.getString(2) + " " + actor_names.getString(3));
+    				System.out.println("\t\t" + actor_names.getString(2) + " " + actor_names.getString(3));
     			}
     		}
     		actor_names.first();
     		
-    		while (movie_directors.next()) {
-    			if (currentID == movie_directors.getInt(1)) {
-    				System.out.println("Director:" + movie_directors.getString(2) + " " + movie_directors.getString(3));
-    			}
-    		}
-    		movie_directors.first();
+    		System.out.println();
+    		
+    		int mid = movie_titles.getInt(1);
+            /* then you have to find the status: of "AVAILABLE" "YOU HAVE IT", "UNAVAILABLE" */
+            _rental_mid_statement.clearParameters();
+            _rental_mid_statement.setInt(1, mid);
+            ResultSet rental_set = _rental_mid_statement.executeQuery();
+            if(rental_set.next()){
+            	int rental_uid = rental_set.getInt(2);
+            	
+            	if (rental_uid == cid) {
+            		System.out.println("\t\tStatus: YOU HAVE IT");
+            	} else {
+            		System.out.println("\t\tStatus: UNAVAILABLE");
+            	}
+            } else {
+            	System.out.println("\t\tStatus: AVAILABLE");
+            }
     		
     		System.out.println();
     	}
