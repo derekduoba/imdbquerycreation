@@ -99,7 +99,7 @@ public class Query {
     private String _transaction_rent_query = "select uid from rentals r where r.rid = ?";
     private PreparedStatement _transaction_rent;
 	
-    private String _transaction_rent_update_rentals = "update rentals set uid = ? where rid = ?;";
+    private String _transaction_rent_update_rentals = "insert into rentals values (?, ?)";
     private PreparedStatement _transaction_update_rentals;
 	
 	private String _transaction_rent_update_customer = "update customer set number_rented = ? where uid = ?";
@@ -396,12 +396,12 @@ public class Query {
     	}
 
     	//checks to see if allowed more rental && movie is free
-    	if(( number_rented != 0 ) && (status==null)){
+    	if(( number_rented != 0 ) && (status==null || status=="")){
 
     		//performs update for rentals table
     		_transaction_update_rentals.clearParameters();
-    		_transaction_update_rentals.setInt(1, cid);
-    		_transaction_update_rentals.setInt(2, mid);
+    		_transaction_update_rentals.setInt(1, mid);
+    		_transaction_update_rentals.setInt(2, cid);
     		_transaction_update_rentals.executeUpdate();
     
     		int temp = helper_check_rented(cid) + 1;
