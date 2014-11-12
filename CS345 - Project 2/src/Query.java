@@ -414,7 +414,9 @@ public class Query {
     		_transaction_update_customer.executeUpdate();
     		
     	}
-    	else { System.out.println("Not allowed to rent, may have exceeded max rentals or movie unavailable."); }
+    	else if(helper_who_has_this_movie(mid)==cid){ System.out.println("You are currently renting this movie!"); }
+    	else if(number_rented==0){ System.out.println("You have exceeded max rentals, please return a movie."); }
+    	else { System.out.println("I'm sorry, the movie has been rented out by another customer. Please try again later."); }
     }
 
     public void transaction_return(int cid, int mid) throws Exception {
