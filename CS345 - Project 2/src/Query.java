@@ -61,31 +61,6 @@ public class Query {
     //Choose Plan
     private String _update_plan_sql = "UPDATE CUSTOMER SET plid = ? WHERE uid = ?";
     private PreparedStatement _update_plan_statement;
-    
-    //Personal Data queries
-    //Altered the query to access the max_rentals property from RentalPlans instead of Customer table
-	private String _transaction_personal_data_query = "select i.firstname, i.lastname, c.number_rented, r.max_rentals from ContactInfo i, Customer c, RentalPlans r where i.cid = ? and c.uid = ? and r.plid = c.plid";
-	private PreparedStatement _transaction_personal_query;
-    
-    // transaction rent queries
-	private String _transaction_rent_query = "select r.rid, r.status, c.number_rented, c.max_rentals from Rentals r, Customer c where r.rid = ? and c.uid = ?";
-	private PreparedStatement _transaction_rent;
-	
-	private String _transaction_rent_update_rentals = "update rentals set uid = ?, status = '?' where rid = ?";
-	private PreparedStatement _transaction_update_rentals;
-	
-	private String _transaction_rent_update_customer = "update customer set number_rented = ? where uid = ?";
-	private PreparedStatement _transaction_update_customer;
-	
-	//transaction return queries
-	private String _transaction_return_query = "select r.uid, r.status, c.number_rented from Rentals r, Customer c where r.rid = ? and c.uid = ?";
-	private PreparedStatement _transaction_return;
-	
-	private String _transaction_return_rental_update = "update Rentals set status = 'open' where rid = ?";
-	private PreparedStatement _transaction_return_rentals;
-
-	private String _transaction_return_customer_update = "update customer set number_rented = ? where uid = ?";
-	private PreparedStatement _transaction_return_customer;
 	
     // Regular Search queries
 	private String _actor_mid_sql = "SELECT A.fname, A.lname "
@@ -112,6 +87,31 @@ public class Query {
     private String _list_movie_directors_sql = "SELECT m.id, d1.fname, d1.lname FROM directors as d1 INNER JOIN movie_directors as d2 ON d1.id=d2.did INNER JOIN movie as m ON m.id=d2.mid WHERE LOWER(m.name) like LOWER(?) ORDER BY m.id";
     private PreparedStatement _list_movie_directors_statement;
     		
+    // personal data(helpers), transactions rent and return
+    //helper method customer info
+    private String _customer = "select i.firstname, i.lastname from contactinfo i where i.cid = ?";
+    private PreparedStatement _customer_info;
+    
+    private String _helper_compute_rentals = "select r.max_rentals, c.number_rented from rentalplans r, customer c where r.plid = c.plid and c.uid = ?";
+    private PreparedStatement _helper_rentals;
+    
+    // transaction rent queries
+    private String _transaction_rent_query = "select uid from rentals r where r.rid = ?";
+    private PreparedStatement _transaction_rent;
+	
+    private String _transaction_rent_update_rentals = "update rentals set uid = ? where rid = ?;";
+    private PreparedStatement _transaction_update_rentals;
+	
+	private String _transaction_rent_update_customer = "update customer set number_rented = ? where uid = ?";
+	private PreparedStatement _transaction_update_customer;
+	
+	//transaction return queries
+	private String _transaction_return_rental_update = "update Rentals set uid = NULL where rid = ?";
+	private PreparedStatement _transaction_return_rentals;
+
+	private String _transaction_return_customer_update = "update customer set number_rented = ? where uid = ?";
+	private PreparedStatement _transaction_return_customer;
+	
     public Query() {
     }
 
@@ -183,25 +183,68 @@ public class Query {
         _list_movie_details_statement = _imdb.prepareStatement(_list_movie_details_sql);
         _list_movie_actors_statement = _imdb.prepareStatement(_list_movie_actors_sql, ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_UPDATABLE);
         _list_movie_directors_statement = _imdb.prepareStatement(_list_movie_directors_sql, ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_UPDATABLE);
-
+	
+	     // personal data, transactions rent and return
+        //helper methods
+        _customer_info = _customer_db.prepareStatement(_customer);
+    	_helper_rentals = _customer_db.prepareStatement(_helper_compute_rentals);
+        
+    	//transaction rent
+    	_transaction_rent = _customer_db.prepareStatement(_transaction_rent_query);
+    	_transaction_update_rentals = _customer_db.prepareStatement(_transaction_rent_update_rentals);
+    	_transaction_update_customer = _customer_db.prepareStatement(_transaction_rent_update_customer);
+    	
+    	//transaction return
+    	_transaction_return_rentals = _customer_db.prepareStatement(_transaction_return_rental_update);
+    	_transaction_return_customer = _customer_db.prepareStatement(_transaction_return_customer_update);
+	
         /* . . . . . . */
     }
 
 
     /**********************************************************/
     /* suggested helper functions  */
-
     public int helper_compute_remaining_rentals(int cid) throws Exception {
-        /* how many movies can she/he still rent ? */
-        /* you have to compute and return the difference between the customer's plan
-           and the count of oustanding rentals */
-        return (99);
+    	int max_rentals = 0;
+    	int number_rented = 0;
+    	
+    	_helper_rentals.clearParameters();
+    	_helper_rentals.setInt(1, cid);
+    	ResultSet rentals = _helper_rentals.executeQuery();
+    	
+    	while( rentals.next() ){ max_rentals = rentals.getInt("max_rentals"); number_rented = rentals.getInt("number_rented"); } 
+        return(max_rentals-number_rented);
+    }
+    
+    public int helper_check_rented(int cid) throws Exception{
+	String rented = "Select number_rented from customer where uid = ?";
+	PreparedStatement rent = _customer_db.prepareStatement(rented);
+	rent.setInt(1, cid);
+	ResultSet one = rent.executeQuery();
+	int temp = 0;
+	while(one.next()){ temp = one.getInt("number_rented"); } 
+	return temp;
     }
 
     public String helper_compute_customer_name(int cid) throws Exception {
-        /* you find  the first + last name of the current customer */
-        return ("JoeFirstName" + " " + "JoeLastName");
-
+    	_customer_info.clearParameters();
+    	_customer_info.setInt(1, cid);
+    	ResultSet returned = _customer_info.executeQuery();
+    	String first = "";
+    	String last = "";
+    	
+    	while(returned.next()){ first = returned.getString("firstname"); last = returned.getString("lastname"); }
+        return ( first + " " + last);
+    }
+    
+    private int helper_who_has_this_movie(int mid) throws Exception {
+    	String check = "select uid from rentals where rid = ?";
+    	PreparedStatement checked = _customer_db.prepareStatement(check); 
+    	checked.setInt(1, mid);
+    	ResultSet re = checked.executeQuery();
+    	int temp = 0;
+    	while(re.next()){ temp = re.getInt("uid"); }
+        return temp;
     }
 
     public boolean helper_check_plan(int plan_id) throws Exception {
@@ -212,11 +255,6 @@ public class Query {
     public boolean helper_check_movie(int mid) throws Exception {
         /* is mid a valid movie id ? you have to figure out  */
         return true;
-    }
-
-    private int helper_who_has_this_movie(int mid) throws Exception {
-        /* find the customer id (cid) of whoever currently rents the movie mid; return -1 if none */
-        return (77);
     }
 
     /**********************************************************/
@@ -237,23 +275,10 @@ public class Query {
 
     }
 
-
     public void transaction_personal_data(int cid) throws Exception {
         // println the customer's personal data: name, and plan number
-    	/*
-    	//clears and updates prepared statement
-    	_transaction_personal_query.clearParameters();
-    	_transaction_personal_query.setInt(1, cid);
-    	_transaction_personal_query.setInt(2, cid);
-    	ResultSet _personal_data = _transaction_personal_query.executeQuery();
-    	
-    	while(_personal_data.next()){
-    		System.out.println("Member: " + _personal_data.getString("firstname") + " " + _personal_data.getString("lastname") + " Rentals Left: "
-    							+ (_personal_data.getInt("max_rentals") - _personal_data.getInt("number_rented")));
-    	} 
-    	 */
+    	System.out.println("Welcome back " + helper_compute_customer_name(cid) + " you have " + helper_compute_remaining_rentals(cid) + " rentals remaining.");
     }
-
 
     /**********************************************************/
     /* main functions in this project: */
@@ -353,85 +378,59 @@ public class Query {
 		if(mid_set.next()) 
 			System.out.println("\t" + mid_set.getString(1));
 	}
-
     }
-
+    
     public void transaction_rent(int cid, int mid) throws Exception {
-        /* rent the movie mid to the customer cid */
+        /* rend the movie mid to the customer cid */
         /* remember to enforce consistency ! */
     	
-    	//clears and updates query search parameters
+    	int number_rented = helper_compute_remaining_rentals(cid);
+    	String status = "";
+    	
+    	//for check if rental is free
     	_transaction_rent.clearParameters();
     	_transaction_rent.setInt(1, mid);
-    	_transaction_rent.setInt(2, cid);
-    	
-    	ResultSet rent_set = _transaction_rent.executeQuery();
-    	
-    	//placement variables
-    	int number_rented = 0;
-    	int max_rentals = 0;
-    	String status = null;
-    	
-    	//update variables
-    	while(rent_set.next()){
-    		status = rent_set.getString("status");
-    		number_rented = rent_set.getInt("number_rented");
-    		max_rentals = rent_set.getInt("max_rentals");
+    	ResultSet open = _transaction_rent.executeQuery();
+    	while(open.next()){
+    		status = open.getString("uid");
     	}
-    	
-    	//probably need to make check for errors if queries doesn't update variables right.
-    	
+
     	//checks to see if allowed more rental && movie is free
-    	if( status.equals("open") && (number_rented < max_rentals) ){
-    		
+    	if(( number_rented != 0 ) && (status==null)){
+
     		//performs update for rentals table
     		_transaction_update_rentals.clearParameters();
     		_transaction_update_rentals.setInt(1, cid);
-    		_transaction_update_rentals.setString(2, "closed");
-    		_transaction_update_rentals.setInt(1, mid);
+    		_transaction_update_rentals.setInt(2, mid);
     		_transaction_update_rentals.executeUpdate();
+    
+    		int temp = helper_check_rented(cid) + 1;
     		
     		//performs update for customer table
     		number_rented = number_rented++;
     		_transaction_update_customer.clearParameters();
-    		_transaction_update_customer.setInt(1, number_rented);
+    		_transaction_update_customer.setInt(1, temp);
     		_transaction_update_customer.setInt(2, cid);
     		_transaction_update_customer.executeUpdate();
+    		
     	}
-    	else { System.out.println("Not allowed to rent, may have exceeded max or movie unavailable."); }
+    	else { System.out.println("Not allowed to rent, may have exceeded max rentals or movie unavailable."); }
     }
 
     public void transaction_return(int cid, int mid) throws Exception {
         /* return the movie mid by the customer cid */
     	
-    	//clears and updates new parameters
-    	_transaction_return.clearParameters();
-    	_transaction_return.setInt(1, mid);
-    	_transaction_return.setInt(2, cid);
-    	ResultSet _return_query = _transaction_return.executeQuery();
-    	
-    	//placeholders
-    	int past_customer = 0;
-    	int number_rented = 0;
-    	String status = "";
-    	
-    	//update variables
-    	while(_return_query.next()){
-    		past_customer = _return_query.getInt("uid");
-    		number_rented = _return_query.getInt("number_rented");
-    		status = _return_query.getString("status");
-    	}
-    	
     	//checks to see if customer actually rented the movie
-    	if( (past_customer == cid) && status.equals("closed")){
+    	if( (helper_who_has_this_movie(mid) == cid) ){
     		
     		_transaction_return_rentals.clearParameters();
     		_transaction_return_rentals.setInt(1, mid);
     		_transaction_return_rentals.executeUpdate();
     		
-    		number_rented = number_rented--;
+    		int temp = helper_check_rented(cid) - 1;
+    		
     		_transaction_return_customer.clearParameters();
-    		_transaction_return_customer.setInt(1, number_rented);
+    		_transaction_return_customer.setInt(1, temp);
     		_transaction_return_customer.setInt(2, cid);
     		_transaction_return_customer.executeUpdate();
     	}
