@@ -1,9 +1,9 @@
-/*@font-face {
+@font-face {
     font-family:Gotham-Light;
     font-weight:normal; 
     font-style:normal; 
     src: url('/fonts/gotham-light.otf');
-}*/
+}
 @font-face {
     font-family:Gotham-Book;
     font-weight:normal;
@@ -18,17 +18,18 @@
 }
 body {
     padding: 50px;
-    font: 14px Gotham-Light, Helvetica, Arial, sans-serif;
+    font: 14px Gotham-Book, Helvetica, Arial, sans-serif;
 }
 b {
-    font-family:Gotham-Book,helvetica,arial;
+    font-family:Gotham-Medium,helvetica,arial;
 }
 a {
     color: #00B7FF;
 }
 h1 {
-    font-family:Gotham-Book, "Comic Sans MS",helvetica,arial;
+    font-family:Gotham-Medium, "Comic Sans MS",helvetica,arial;
     font-weight:normal;
+    color:#3E885B;
 }
 h2 {
     font-family:Gotham-Book,helvetica,arial;
@@ -38,23 +39,34 @@ h3 {
     font-family:Gotham-Book,helvetica,arial;
     font-weight:normal;
 }
+li {
+    font-family:Gotham-Book,helvetica,arial;
+}
 .menu {
-    background:#252525;
-    height:30px;
+    background:#333333;
+    height:50px;
 }
 .menu ul {
+    margin:0px;
+    padding:0px;
 }
 .menu li {
-    color:#fff;
-    float:left;
+    /*color:#fff;*/
+    color:#85BDA6;
+    display:inline-block;
     font-size:20px;
     list-style-type:none;
+    line-height:40px;
     margin: 5px 0px 5px 0px;
     text-align: center;
-    width: 100px;
+    width: 50%;
+}
+.menu li.active {
+    color:#3E885B;
 }
 .views-wrapper {
-    border:1px solid #252525;
+    background:#CDD;
+    border:1px solid #CDD3D5;
     min-height:200px;
     text-align:center;
 }
@@ -69,11 +81,28 @@ h3 {
     margin:0px 0px 10px 5px; 
 }
 .login #login-button, #logout-button {
-    background:#252525;
+    background:#333333;
+    /*background:#3E885B;*/
     border:none;
-    color:#fff;
+    /*color:#fff;*/
+    color:#85BDA6;
     height:20px;
     margin:10px 68px 0px 68px;
     text-align:center;
     width:99px;
+}
+#search-button {
+    background:#333333;
+    /*background:#3E885B;*/
+    border:none;
+    /*color:#fff;*/
+    color:#85BDA6;
+    height:20px;
+    margin:0px 0px 0px 10px;
+    text-align:center;
+    width:99px;
+}
+#search-box {
+    border: 1px solid #CDD3D5;
+    width:60%;
 }

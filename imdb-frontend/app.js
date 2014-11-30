@@ -40,32 +40,6 @@ if ('development' == app.get('env')) {
  */
 app.get('/', routes.index);
 
-/*
-app.get('/a', function(req, res) {
-    console.log(req.query);
-    if (req.query.internal) {
-        console.log("A INTERNAL!");
-        routes.a(req, res);
-    } else {
-        console.log("A EXTERNAL!");
-        routes.renderFullPages(req, res);
-    }
-});
-
-app.get('/b', function(req, res) {
-    console.log(req.query);
-    if (req.query.internal) {
-        console.log("B INTERNAL!");
-        routes.b(req, res);
-    } else {
-        console.log("B EXTERNAL!");
-
-        //TODO: Check for session + load the main page if user is already logged in
-        routes.renderFullPages(req, res);
-    }
-});
-*/
-
 app.get('/rentals', function(req, res) {
     if (req.query.internal) {
         console.log("RENTALS INTERNAL!");
