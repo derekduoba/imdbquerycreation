@@ -106,3 +106,6 @@ li {
     border: 1px solid #CDD3D5;
     width:60%;
 }
+.single-movie {
+    list-style:none;
+}
