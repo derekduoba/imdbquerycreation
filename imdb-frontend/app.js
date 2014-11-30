@@ -73,6 +73,7 @@ app.get('/login', function(req, res) {
 
 app.post('/login', routes.loginSubmit);
 app.post('/logout', routes.logout);
+app.post('/search', routes.searchMovies);
 
 http.createServer(app).listen(app.get('port'), function(){
   console.log('Express server listening on port ' + app.get('port'));

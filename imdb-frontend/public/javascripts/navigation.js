@@ -5,6 +5,8 @@ $(document).ready(function() {
     var viewsWrapper = $(".views-wrapper");
     var loginButton = "#login-button";
     var logoutButton = "#logout-button";
+    var searchButton = "#search-button";
+
 
     /**
      * View Navigation Functions
@@ -45,7 +47,6 @@ $(document).ready(function() {
         return false;
     });
 
-
     window.onpopstate = function(event) {  
         var content = "";
         if(event.state) {
@@ -55,7 +56,14 @@ $(document).ready(function() {
             $.get('/' + content, { internal: true }, function(data) {
                 viewsWrapper.html(data);
             });
-        }
-       
+        }       
     }
+
+    viewsWrapper.on("click", searchButton, function(e) {
+        var searchData = { title: $("#search-box").val() };
+        $.post('/search', searchData, function(data) {
+
+        }
+    });
+
 });

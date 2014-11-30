@@ -1,0 +1,15 @@
+// Tempalte for displaying movies
+
+if error
+    p error
+else if !moviedata
+    p "Your search returned no results."
+else
+    div.movie-list
+        // Iterate through each movie
+        each val, index in moviedata
+            ul("movie-" + index)
+                img(src=#{val.poster} width="100")
+                li "Title:" + #{val.title}
+                li "Year:" + #{val.year}
+            br
