@@ -64,6 +64,17 @@ app.get('/b', function(req, res) {
     }
 });
 
+app.get('/rentals', function(req, res) {
+    console.log(req.query);
+    if (req.query.internal) {
+        console.log("RENTALS INTERNAL!");
+        routes.rentals(req, res);
+    } else {
+        console.log("RENTALS EXTERNAL!");
+        routes.renderFullPages(req, res);
+    }
+});
+
 app.get('/login', function(req, res) {
     if (req.query.internal) {
         console.log("LOGIN INTERNAL!");
@@ -76,16 +87,6 @@ app.get('/login', function(req, res) {
 
 app.post('/login', routes.loginSubmit);
 app.post('/logout', routes.logout);
-
-/*
-app.get('/', routes.index);
-app.get('/users', user.list);
-app.get('/a', routes.a);
-app.get('/b', routes.b);
-app.get('/login', routes.login);
-app.post('/login', routes.loginSubmit);
-app.post('/logout', routes.logout);
-*/
 
 http.createServer(app).listen(app.get('port'), function(){
   console.log('Express server listening on port ' + app.get('port'));

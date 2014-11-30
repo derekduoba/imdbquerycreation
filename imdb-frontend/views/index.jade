@@ -2,8 +2,9 @@ extends layout
 
 block content
     h1= title
-
-    .menu
-        include partials/menu
+    
+    if status
+        .menu
+            include partials/menu
     
     .views-wrapper !{partial} 

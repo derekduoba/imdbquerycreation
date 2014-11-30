@@ -43,7 +43,8 @@ $(document).ready(function() {
         console.log("LOGIN BUTTON CLICK!");
         var loginData = { username: $("#username").val(), password: $("#password").val() };
         $.post('/login', loginData, function(data) {
-            viewsWrapper.html(data);
+            //viewsWrapper.html(data);
+            $('body').html(data);
             history.pushState({ id: 0, name: 'index' }, '', '/');
         });
         return false;
@@ -52,8 +53,9 @@ $(document).ready(function() {
     viewsWrapper.on("click", logoutButton, function(e) {
         console.log("LOGOUT BUTTON CLICK!");
         $.post('/logout', function(data) {
-            console.log(data);
-            viewsWrapper.html(data);
+            //console.log(data);
+            //viewsWrapper.html(data);
+            $('body').html(data);
             history.pushState({ id: 0, name: 'index' }, '', '/');
         });
         return false;
