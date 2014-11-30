@@ -40,6 +40,7 @@ if ('development' == app.get('env')) {
  */
 app.get('/', routes.index);
 
+/*
 app.get('/a', function(req, res) {
     console.log(req.query);
     if (req.query.internal) {
@@ -63,14 +64,25 @@ app.get('/b', function(req, res) {
         routes.renderFullPages(req, res);
     }
 });
+*/
 
 app.get('/rentals', function(req, res) {
-    console.log(req.query);
     if (req.query.internal) {
         console.log("RENTALS INTERNAL!");
         routes.rentals(req, res);
     } else {
         console.log("RENTALS EXTERNAL!");
+        req.url = "/login"; // Quick & dirty hack to redirect to the login (home) view
+        routes.renderFullPages(req, res);
+    }
+});
+
+app.get('/search', function(req, res) {
+    if (req.query.internal) {
+        console.log("SEARCH INTERNAL!");
+        routes.search(req, res);
+    } else {
+        console.log("SEARCH EXTERNAL!");
         routes.renderFullPages(req, res);
     }
 });

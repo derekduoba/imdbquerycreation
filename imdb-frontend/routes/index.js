@@ -2,10 +2,9 @@ var jade = require('jade');
 
 
 /*
- * GET home page and various partials
+ * Functions for handling various routing requests
  */
 
-var last = "none";
 
 /**
  * Full Pages
@@ -16,15 +15,13 @@ exports.renderFullPages = function(req, res) {
     var path = req.url.split('?')[0];
     var partialHTML;
     if (req.session.username) {
-        console.log(req.session.username);
         if (path.indexOf('/login') > -1) {
             partialHTML = jade.renderFile('views/partials/home.jade', { user: req.session.username });
             loggedin = true;
-            res.render('index', { title: 'MOVIES R\' US',  partial: partialHTML, user: req.session.username, status: loggedin });
         } else {
             partialHTML = jade.renderFile('views/partials' + path + '.jade');
-            res.render('index', { title: 'MOVIES R\' US',  partial: partialHTML, user: req.session.username, status: loggedin });
         }
+        res.render('index', { title: 'MOVIES R\' US',  partial: partialHTML, user: req.session.username, status: loggedin });
     } else {
         partialHTML = jade.renderFile('views/partials/login.jade');
         res.render('index', { title: 'MOVIES R\' US',  partial: partialHTML });
@@ -32,7 +29,7 @@ exports.renderFullPages = function(req, res) {
 }
 
 
-// Login & logout
+// Login & logout upon initial entry
 exports.renderInitialView = function(req, res) {
     var partialHTML;
     var path = req.url.split('?')[0];
@@ -43,7 +40,7 @@ exports.renderInitialView = function(req, res) {
         partialHTML = jade.renderFile('views/partials/login.jade');
         loggedin = false
     }
-    res.render('index', { title: 'MOVIESs R\' US',  partial: partialHTML, status: loggedin });
+    res.render('index', { title: 'MOVIES R\' US',  partial: partialHTML, status: loggedin });
 }
 
 
@@ -53,53 +50,32 @@ exports.renderInitialView = function(req, res) {
 
 // Index
 exports.index = function(req, res){
-    if (req.session.lastPage) {
-        last = req.session.lastPage;
-    }
-    req.session.lastPage = "none";
-
     if (!req.session.username) {
-        console.log("USER IS NOT LOGGED IN");
         var partialHTML = jade.renderFile('views/partials/login.jade');
-        res.render('index', { title: 'Movies R\' Us', partial: partialHTML, loggedin: req.session } ); 
+        res.render('index', { title: 'MOVIES R\' US', partial: partialHTML } ); 
     } else {
-        console.log("USER IS LOGGED IN");
         var partialHTML = jade.renderFile('views/partials/home.jade');
-        res.render('index', { title: 'Movies R\' Us', partial: partialHTML, user: req.session.username, loggedin: req.session } );
+        res.render('index', { title: 'MOVIES R\' US', partial: partialHTML, user: req.session.username, loggedin: req.session } );
     }
 };
 
 
-// View A
-exports.a = function(req, res) {
-    if (req.session.lastPage) {
-        last = req.session.lastPage;
-    }
-    req.session.lastPage = "/a";
-    res.render('partials/a', { layout: false, test: last });
+// Rentals View
+exports.rentals = function(req, res) {
+    res.render('partials/home', { layout: false, user: req.session.username });
 };
 
-// View B
-exports.b = function(req, res) {
-    if (req.session.lastPage) {
-        last = req.session.lastPage;
-    }
-    req.session.lastPage = "/b";
-    res.render('partials/b', { layout: false, test: last });
+// Search View
+exports.search = function(req, res) {
+    res.render('partials/search', { layout: false });
 };
 
 // Login View
 exports.login = function(req, res) {
-    if (req.session.lastPage) {
-        last = req.session.lastPage;
-    }
-    req.session.lastPage = "/login";
-    
     if (!req.session.username) {
-        res.render('partials/login', { layout: false, test: last });
+        res.render('partials/login', { layout: false });
     } else {
-        console.log(req.session.username);
-        res.render('partials/home', { layout: false, test: last, user: req.session.username });
+        res.render('partials/home', { layout: false, user: req.session.username });
     }
 };
 
@@ -110,11 +86,6 @@ exports.login = function(req, res) {
 
 // Login Submission
 exports.loginSubmit = function(req, res) {
-    if (req.session.lastPage) {
-        last = req.session.lastPage;
-    }
-    req.session.lastPage = "/login";
-
     //if (!req.session.username && req.body.username) {
     if (req.body.username) {
         req.session.save(function(err) {
@@ -126,7 +97,7 @@ exports.loginSubmit = function(req, res) {
             }
         });
     } else {
-        res.render('partials/invalid', { layout: false, test: last });
+        res.render('partials/invalid', { layout: false });
     }
 }
 

@@ -63,7 +63,10 @@ h3 {
     margin-right:auto;
     margin-top:50px;
     text-align:right;
-    width:235px;
+    width:240px;
+}
+.login #username, #password {
+    margin:0px 0px 10px 5px; 
 }
 .login #login-button, #logout-button {
     background:#252525;

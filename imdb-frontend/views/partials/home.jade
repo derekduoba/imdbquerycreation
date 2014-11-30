@@ -1,6 +1,7 @@
-h2= "logged-in view"
-p= "hello " + user
-p= "last view: " + test
+h2(class=header)= "My Rentals"
+p= "Hello " + user
+
+div(id=rentals-container)
 
 if user
     form(action="")
