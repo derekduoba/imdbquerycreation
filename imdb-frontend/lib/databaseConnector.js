@@ -160,3 +160,149 @@ exports.getUserRentals = function(uid, callback) {
         }
     });
 }
+
+getMovieDetails = function(title, callback) {
+    pg.connect(imdbString, function(err, client, done) {
+        if (err) {
+            callback(err);
+        } else {
+            var Query = "SELECT m.id, m.name, m.year FROM movie as m WHERE LOWER(m.name) like LOWER($1) ORDER BY m.id";
+
+            client.query({
+                    text: Query,
+                    values: ['%' + title + '%']
+                },
+                function(err, result) {
+                    // Ends the "transaction":
+                    done();
+
+                    if (err) {
+                        callback(err, undefined, false);
+                    } else {
+                        // Disconnects from the database
+                        client.end();
+                        // This cleans up connected clients to the database and allows subsequent requests to the database
+                        pg.end();
+						
+                        callback(undefined, result.rows, true);
+                    }
+                });
+        }
+    });
+}
+
+getMovieActors = function(title, callback) {
+    getMovieDetails(title, function(err, movieDetails, success) {
+        if (err) {
+            callback(err);
+            console.log("BAD ERROR");
+        } else {
+            pg.connect(imdbString, function(err, client, done) {
+                if (err) {
+                    callback(err);
+                } else {
+                    var Query = "SELECT m.id, a.fname, a.lname FROM actor as a INNER JOIN casts as c ON a.id=c.pid INNER JOIN movie as m ON c.mid=m.id WHERE LOWER(m.name) like LOWER($1) ORDER BY m.id";
+
+                    client.query({
+                            text: Query,
+                            values: ['%' + title + '%']
+                        },
+                        function(err, result) {
+                            // Ends the "transaction":
+                            done();
+
+                            if (err) {
+                                callback(err, undefined, false);
+                            } else {
+                                // Disconnects from the database
+                                client.end();
+                                // This cleans up connected clients to the database and allows subsequent requests to the database
+                                pg.end();
+								
+                                callback(undefined, movieDetails, result.rows, true);
+                            }
+                        });
+                }
+            });
+        }
+    });
+}
+
+getMovieDirectors = function(title, callback) {
+    getMovieActors(title, function(err, movieDetails, movieActors, success) {
+        if (err) {
+            callback(err);
+            console.log("BAD ERROR");
+        } else {
+            pg.connect(imdbString, function(err, client, done) {
+                if (err) {
+                    callback(err);
+                } else {
+                    var Query = "SELECT m.id, d1.fname, d1.lname FROM directors as d1 INNER JOIN movie_directors as d2 ON d1.id=d2.did INNER JOIN movie as m ON m.id=d2.mid WHERE LOWER(m.name) like LOWER($1) ORDER BY m.id";
+
+                    client.query({
+                            text: Query,
+                            values: ['%' + title + '%']
+                        },
+                        function(err, result) {
+                            // Ends the "transaction":
+                            done();
+
+                            if (err) {
+                                callback(err, undefined, false);
+                            } else {
+                                // Disconnects from the database
+                                client.end();
+                                // This cleans up connected clients to the database and allows subsequent requests to the database
+                                pg.end();
+                                callback(undefined, movieDetails, movieActors, result.rows, true);
+                            }
+                        });
+                }
+            });
+        }
+    });
+}
+
+exports.searchMovies = function(uid, movieTitle, callback) {
+    getMovieDirectors(movieTitle, function(err, movieDetails, movieActors, movieDirectors, success) {
+        if (err) {
+            callback(err);
+            console.log("BAD ERROR");
+        } else {
+            var returnObject = [];
+            for (i = 0; i < movieDetails.length; i++) {
+                var currentResult = {};
+                var currentID = movieDetails[i].id;
+                currentResult.mid = currentID;
+                currentResult.title = movieDetails[i].name;
+                currentResult.year = movieDetails[i].year;
+
+                var directorArray = [];
+                for (ii = 0; ii < movieDirectors.length; ii++) {
+                    if (currentID == movieDirectors[ii].id) {
+                        var currentDirector = {};
+                        currentDirector.fname = movieDirectors[ii].fname;
+                        currentDirector.lname = movieDirectors[ii].lname;
+                        directorArray[directorArray.length] = currentDirector;
+                    }
+                }
+                currentResult.directors = directorArray;
+
+                var actorArray = [];
+                for (iii = 0; iii < movieActors.length; iii++) {
+                    if (currentID == movieActors[iii].id) {
+                        var currentActor = {};
+                        currentActor.fname = movieActors[iii].fname;
+                        currentActor.lname = movieActors[iii].lname;
+                        actorArray[actorArray.length] = currentActor;
+                    }
+                }
+                currentResult.actors = actorArray;
+				
+                returnObject[returnObject.length] = currentResult;
+            }
+            callback(undefined, returnObject);
+        }
+    });
+}
