@@ -1,4 +1,5 @@
 var pg = require('pg');
+var XMLHttpRequest = require("xmlhttprequest").XMLHttpRequest;
 
 // DB connection strings, to be modified according to DB configuration
 var imdbString = "postgres://postgres:admin@localhost/imdb";
@@ -140,13 +141,15 @@ exports.getUserRentals = function(uid, callback) {
                                         callback(err, undefined);
                                     } else {
                                         returnObj[returnObj.length] = {
-                                            "rid": mid,
                                             "title": result.rows[0].name
                                         };
                                         if (returnObj.length == midSet.length) {
                                             done();
                                             client.end();
                                             pg.end();
+											for (i = 0; i < midSet.length; i++) {
+												returnObj[i].rid = midSet[i].rid;
+											}
                                             callback(undefined, returnObj);
                                         }
                                     }
@@ -183,7 +186,7 @@ getMovieDetails = function(title, callback) {
                         client.end();
                         // This cleans up connected clients to the database and allows subsequent requests to the database
                         pg.end();
-						
+
                         callback(undefined, result.rows, true);
                     }
                 });
@@ -218,7 +221,7 @@ getMovieActors = function(title, callback) {
                                 client.end();
                                 // This cleans up connected clients to the database and allows subsequent requests to the database
                                 pg.end();
-								
+
                                 callback(undefined, movieDetails, result.rows, true);
                             }
                         });
@@ -299,10 +302,67 @@ exports.searchMovies = function(uid, movieTitle, callback) {
                     }
                 }
                 currentResult.actors = actorArray;
-				
-                returnObject[returnObject.length] = currentResult;
+
+                pg.connect(customerString, function(err, client, done) {
+                    if (err) {
+                        callback(err);
+                    } else {
+                        var statusQuery = "SELECT * FROM rentals WHERE rid = $1";
+                        client.query({
+                                text: statusQuery,
+                                values: [currentID]
+                            },
+                            function(err, result) {
+                                // Ends the "transaction":
+
+
+                                if (err) {
+                                    callback(err, undefined, false);
+                                } else {
+
+
+                                    if (result.rows.length > 0) {
+                                        var rental_uid = result.rows[0].uid;
+                                        if (rental_uid == uid) {
+                                            currentResult.status = "YOU HAVE IT";
+                                        } else {
+                                            currentResult.status = "UNAVAILABLE";
+                                        }
+                                    } else {
+                                        currentResult.status = "AVAILABLE";
+                                    }
+									currentResult.poster = getPosterUrl(currentResult.title);
+                                    returnObject[returnObject.length] = currentResult;
+                                    done();
+                                    if (returnObject.length == movieDetails.length) {
+                                        client.end();
+                                        pg.end();
+                                        callback(undefined, returnObject);
+                                    }
+
+                                }
+                            });
+                    }
+                });
             }
-            callback(undefined, returnObject);
+
         }
     });
+}
+
+function getPosterUrl(title)
+{
+	var processed = title.replace(" ", "+");
+	var url = "http://www.omdbapi.com/?t=" + processed + "&y=&plot=short&r=json"
+    var xmlHttp = null;
+
+    xmlHttp = new XMLHttpRequest();
+    xmlHttp.open( "GET", url, false );
+    xmlHttp.send( null );
+    var res = JSON.parse(xmlHttp.responseText);
+	if(res.Poster=="N/A"){
+		return "https://s.ytimg.com/yts/img/no_thumbnail-vfl4t3-4R.jpg";
+	} else {
+		return res.Poster;
+	}
 }
