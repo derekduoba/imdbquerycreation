@@ -11,11 +11,9 @@ exports.searchMovies = function(req, res) {
     
     console.log("SEARCH MOVIES INVOKED!");
     
-    var movieData = {};
     var searchString = req.body.title;
     
-    dbc.searchMovies(0, searchString, function(data, err) {
-        console.log("SEARCHING FOR MOVIES!");
+    dbc.searchMovies(0, searchString, function(err, data) {
         if (err) {
             console.log("AN ERROR OCCURED!");
             console.log(err);

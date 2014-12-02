@@ -80,7 +80,7 @@ li {
 .login #username, #password {
     margin:0px 0px 10px 5px; 
 }
-.login #login-button, #logout-button {
+.login #login-button, #logout-button, #search-button, #rent-button {
     background:#333333;
     /*background:#3E885B;*/
     border:none;
@@ -92,20 +92,55 @@ li {
     width:99px;
 }
 #search-button {
-    background:#333333;
-    /*background:#3E885B;*/
-    border:none;
-    /*color:#fff;*/
-    color:#85BDA6;
-    height:20px;
-    margin:0px 0px 0px 10px;
-    text-align:center;
-    width:99px;
+    background:#333;
+    color:#fff;
+    font-size:25px;
+    height:45px;
+    margin:0px 0px 0px 15px;
+    width:150px;
+}
+#rent-button {
+    float:right;
+    height:50px;
+    margin:50px 0px 50px 0px;
 }
 #search-box {
     border: 1px solid #CDD3D5;
-    width:60%;
+    background: #333;
+    color:#fff;
+    font-size:25px;
+    height:45px;
+    padding:0px 10px;
+    width:70%;
+}
+.search {
+    margin:100px 0px;
+}
+.movie-list {
+    margin-top:0px;
+}
+.movie-list img {
+    float:left;
 }
 .single-movie {
     list-style:none;
+    height:150px;
+    margin:0px 50px 10px 50px; 
+    padding:5px 10px 5px 5px;
+}
+.single-movie.active {
+    background:#85BDA6;
+}
+.single-movie ul {
+    /*color: #3E885B; */
+    float: left;
+    font-size: 20px;
+    list-style-type: none;
+    margin: 0px 20px 0px 20px;
+    overflow: hidden;
+    padding: 0;
+    text-align: left;
+}
+.single-movie .li {
+    float:left;
 }
