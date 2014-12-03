@@ -497,7 +497,8 @@ function getPosterUrl(title) {
 
 /**
  * Production Function
-**/ TODO: Add image caching
+ * TODO: Add image caching
+**/
 function getPosterUrl(title) {
     var processed = title.replace(" ", "+");
     var url = "http://www.omdbapi.com/?t=" + processed + "&y=&plot=short&r=json"
