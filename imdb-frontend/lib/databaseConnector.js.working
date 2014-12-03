@@ -485,6 +485,19 @@ checkMovieRenter = function (uid, mid, callback) {
     });
 }
 
+
+/**
+ * Development Function
+ **/
+
+function getPosterUrl(title) {
+    return "http://ia.media-imdb.com/images/M/MV5BMjExNzM0NDM0N15BMl5BanBnXkFtZTcwMzkxOTUwNw@@._V1_SX300.jpg";
+}
+
+
+/**
+ * Production Function
+**/ TODO: Add image caching
 function getPosterUrl(title) {
     var processed = title.replace(" ", "+");
     var url = "http://www.omdbapi.com/?t=" + processed + "&y=&plot=short&r=json"
