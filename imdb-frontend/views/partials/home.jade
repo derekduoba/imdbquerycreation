@@ -1,8 +1,7 @@
-h2(class=header)= "My Rentals"
-p= "Hello " + user
+h2(class=header)= "Rentals"
 
-div(id=rentals-container)
+.rentals !{partial}
 
-if user
-    form(action="")
-        input(type="submit", name="logoutButton", id="logout-button", value="Logout")
+
+form(action="")
+    input(type="submit", name="logoutButton", id="logout-button", value="Logout")

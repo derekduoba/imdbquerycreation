@@ -1,3 +1,8 @@
+/**
+ * Front-end Navigation Functionality for CS345 IMDB Webapp
+ * @author: Derek Duoba
+**/
+
 $(document).ready(function() {
 
     //console.log("DOCUMENT IS READY!");
@@ -10,6 +15,7 @@ $(document).ready(function() {
     var singleMovieContainer = ".single-movie";
     var rentButton = "#rent-button";
     var menu = '.menu';
+
 
     /**
      * View Navigation: Main Functions
@@ -84,11 +90,25 @@ $(document).ready(function() {
      **/
     viewsWrapper.on("click", rentButton, function(e) {
         if ($(e.target).hasClass("available")) {
-            var movieData = { movieid: $(e.target).data('name') };
+            $this = e.target;
+            var movieData = { movieid: $(this).attr('name') };
             console.log("RENTAL AVAILABLE!");
-            //TODO: Call rental API here
-            $.post('/rent', movieData, function(data) {
-                $(e.target).prop('value', 'Rented');
+            console.log($(e.target).attr('name'));
+            $.post('/rent', movieData, function(data) { 
+                console.log("VALUE:");
+                console.log(data);
+                if (data == 4) { // Error
+                    console.log(data.error);
+                    $($this).prop('value', 'ERROR');
+                } else if (data === 0) { // Success
+                    $($this).prop('value', 'Rented');
+                } else if (data === 1) { // Unavailable
+                    $($this).prop('value', 'Unavailable');
+                } else if (data === 2) { // Unavailable
+                    $($this).prop('value', 'Rental Limit');
+                } else if (data === 3) {
+                    $($this).prop('value', 'Already Rented');
+                }
             });
         }
         return false;
