@@ -1,10 +1,30 @@
 var pg = require('pg');
+var fs = require('fs');
+var path = require('path');
+var http = require("http");
+var https = require("https");
 var XMLHttpRequest = require("xmlhttprequest")
     .XMLHttpRequest;
 
 // DB connection strings, to be modified according to DB configuration
 var imdbString = "postgres://postgres:admin@localhost/imdb";
 var customerString = "postgres://postgres:admin@localhost/CUSTOMER"
+var imageCache;
+fs.readFile('./public/image_cache/image_cache', {
+    encoding: 'utf8'
+}, function (err, data) {
+    if (err) {
+        throw err;
+    } else {
+        try {
+            imageCache = JSON.parse(data);
+        } catch (e) {
+            imageCache = {};
+        }
+        console.log("Image cache loaded with " + Object.keys(imageCache)
+            .length + " cached images.");
+    }
+});
 
 
 /*
@@ -553,19 +573,42 @@ exports.returnMovie = function (uid, mid, callback) {
 
 
 
-
 function getPosterUrl(title) {
+	var titleNoSpace = title.replace(" ", "");
+    if (imageCache[titleNoSpace]) return imageCache[titleNoSpace];
     var processed = title.replace(" ", "+");
-    var url = "http://www.omdbapi.com/?t=" + processed + "&y=&plot=short&r=json"
+    var url = "http://www.omdbapi.com/?t=" + processed + "&y=&plot=short&r=json";
     var xmlHttp = null;
 
     xmlHttp = new XMLHttpRequest();
     xmlHttp.open("GET", url, false);
     xmlHttp.send(null);
     var res = JSON.parse(xmlHttp.responseText);
-    if (res.Poster == "N/A") {
-        return "https://s.ytimg.com/yts/img/no_thumbnail-vfl4t3-4R.jpg";
+    var posterURL;
+    if (res.Poster == "N/A" || res.Poster == undefined) {
+        posterURL = "http://content9.flixster.com/movie/11/15/58/11155815_800.jpg";
     } else {
-        return res.Poster;
+        posterURL = res.Poster;
     }
+    imageCache[titleNoSpace] = '/image_cache/posters/' + path.basename(posterURL);
+    fs.writeFile('./public/image_cache/image_cache', JSON.stringify(imageCache), function (err) {
+        if (err) throw err;
+    });
+	
+    var file = fs.createWriteStream('./public/image_cache/posters/' + path.basename(posterURL));
+    if (posterURL.substring(0, 5) == "https") {
+        var request = https.get(posterURL, function (response) {
+            response.pipe(file);
+            console.log("Poster cached: " + path.basename(posterURL));
+        });
+    } else {
+        var request = http.get(posterURL, function (response) {
+            response.pipe(file);
+            console.log("Poster cached: " + path.basename(posterURL));
+        });
+    }
+	
+	return posterURL;
+    
 }
+
