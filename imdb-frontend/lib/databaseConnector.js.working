@@ -354,6 +354,137 @@ exports.searchMovies = function (uid, movieTitle, callback) {
     });
 }
 
+exports.rentMovie = function (uid, mid, callback) {
+    checkMovieRenter(uid, mid, function (err, number_rented) {
+        if (err) {
+            if (err.message) {
+                callback(undefined, err.message);
+            } else {
+                callback(err);
+            }
+        } else {
+            pg.connect(customerString, function (err, client, done) {
+                if (err) {
+                    callback(err);
+                } else {
+                    var rentalsUpdate = "insert into rentals values ($1, $2)";
+                    client.query({
+                        text: rentalsUpdate,
+                        values: [mid, uid]
+                    }, function(err, result){
+					done();
+                        client.end();
+                        pg.end();});
+                }
+            });
+			pg.connect(customerString, function (err, client, done) {
+                if (err) {
+                    callback(err);
+                } else {
+                    var customerUpdate = "update customer set number_rented = $1 where uid = $2";
+                    client.query({
+                        text: customerUpdate,
+                        values: [number_rented + 1, uid]
+                    }, function(err, result){
+					done();
+                        client.end();
+                        pg.end();});
+                }
+            });
+			
+			callback(undefined, 0);
+        }
+
+    });
+}
+
+checkRemainingRentals = function (uid, callback) {
+    pg.connect(customerString, function (err, client, done) {
+        if (err) {
+            callback(err);
+        } else {
+            var Query = "select r.max_rentals, c.number_rented from rentalplans r, customer c where r.plid = c.plid and c.uid = $1";
+            var max_rentals = 0;
+            var number_rented = 0;
+            client.query({
+                    text: Query,
+                    values: [uid]
+                },
+                function (err, result) {
+                    // Ends the "transaction":
+                    if (err) {
+                        callback(err, undefined, false);
+                    } else {
+                        max_rentals = result.rows[0].max_rentals;
+                        number_rented = result.rows[0].number_rented;
+                        var remaining = max_rentals - number_rented;
+                        done();
+                        client.end();
+                        pg.end();
+                        if (remaining == 0) {
+                            var error = {};
+                            error.message = 2;
+                            callback(error);
+                        } else {
+                            callback(undefined, number_rented, remaining);
+                        }
+
+                    }
+                });
+
+        }
+    });
+}
+
+checkMovieRenter = function (uid, mid, callback) {
+    checkRemainingRentals(uid, function (err, number_rented, remaining) {
+        if (err) {
+            callback(err);
+        } else {
+            pg.connect(customerString, function (err, client, done) {
+                if (err) {
+                    callback(err);
+                } else {
+                    var Query = "select uid from rentals r where r.rid = $1";
+                    client.query({
+                            text: Query,
+                            values: [mid]
+                        },
+                        function (err, result) {
+                            // Ends the "transaction":
+                            if (err) {
+                                callback(err, undefined, false);
+                            } else {
+								var renterID;
+                                if(result.rows[0]) { renterID = result.rows[0].uid;}
+                                done();
+                                client.end();
+                                pg.end();
+                                var error = {};
+                                if ((renterID==undefined) || (renterID == null) || (renterID == "")) {
+                                    callback(undefined, number_rented);
+                                } else {
+                                    if (renterID == uid) {
+                                        error.message = 3;
+                                        callback(error);
+                                    } else {
+                                        error.message = 1;
+                                        callback(error);
+                                    }
+                                }
+
+                            }
+                        });
+
+                }
+            });
+        }
+
+
+
+    });
+}
+
 function getPosterUrl(title) {
     var processed = title.replace(" ", "+");
     var url = "http://www.omdbapi.com/?t=" + processed + "&y=&plot=short&r=json"
