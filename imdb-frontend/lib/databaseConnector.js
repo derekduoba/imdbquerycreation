@@ -1,10 +1,14 @@
 var pg = require('pg');
-var XMLHttpRequest = require("xmlhttprequest").XMLHttpRequest;
+var XMLHttpRequest = require("xmlhttprequest")
+    .XMLHttpRequest;
 
 // DB connection strings, to be modified according to DB configuration
-var imdbString = "postgres://dduoba:password@localhost/imdb";
+var imdbString = "postgres://postgres:admin@localhost/imdb";
+var customerString = "postgres://postgres:admin@localhost/CUSTOMER"
 
-var customerString = "postgres://dduoba:password@localhost/customer"
+// Local connection strings
+var imdbString = "postgres://dduoba:password@localhost/imdb";
+var customerString = "postgres://dduoba:password@localhost/customer";
 
 
 /*
@@ -19,8 +23,8 @@ Returns
 @customer(uid, firstname, lastname, email, address, city, state): the customer data of matching customer's username/pass
 @success(boolean): true if user found for username/password combo, false if not(Such as bad username/pass/err)
 */
-exports.login = function(login, password, callback) {
-    pg.connect(customerString, function(err, client, done) {
+exports.login = function (login, password, callback) {
+    pg.connect(customerString, function (err, client, done) {
         if (err) {
             callback(err);
         } else {
@@ -31,7 +35,7 @@ exports.login = function(login, password, callback) {
                     text: uidQuery,
                     values: [login, password]
                 },
-                function(err, result) {
+                function (err, result) {
 
                     if (err) {
                         callback(err, undefined, false);
@@ -42,7 +46,7 @@ exports.login = function(login, password, callback) {
                                     text: contactQuery,
                                     values: [result.rows[0].lid]
                                 },
-                                function(err, result) {
+                                function (err, result) {
                                     if (err) {
                                         callback(err, undefined, false);
                                     } else {
@@ -79,8 +83,8 @@ exports.login = function(login, password, callback) {
 }
 
 // Helper function that gets ids of rental movies for this user
-getRentedMids = function(uid, callback) {
-    pg.connect(customerString, function(err, client, done) {
+getRentedMids = function (uid, callback) {
+    pg.connect(customerString, function (err, client, done) {
         if (err) {
             callback(err);
         } else {
@@ -90,7 +94,7 @@ getRentedMids = function(uid, callback) {
                     text: midQuery,
                     values: [uid]
                 },
-                function(err, result) {
+                function (err, result) {
                     // Ends the "transaction":
                     done();
 
@@ -118,13 +122,13 @@ Returns
 @err: if a connection problem arises, this will contain said info, undefined otherwise
 @rentalArray of this structure: [{"rid":243,"title":"Aile kadini"},{"rid":243,"title":"Bingo"}] where rid is equivalent to mid
 */
-exports.getUserRentals = function(uid, callback) {
-    getRentedMids(uid, function(err, midSet, suc) {
+exports.getUserRentals = function (uid, callback) {
+    getRentedMids(uid, function (err, midSet, suc) {
         if (err) {
             callback(err);
             console.log("BAD ERROR");
         } else {
-            pg.connect(imdbString, function(err, client, done) {
+            pg.connect(imdbString, function (err, client, done) {
                 if (err) {
                     callback(err);
                 } else {
@@ -137,7 +141,7 @@ exports.getUserRentals = function(uid, callback) {
                                     text: titleQuery,
                                     values: [mid]
                                 },
-                                function(err, result) {
+                                function (err, result) {
                                     if (err) {
                                         callback(err, undefined);
                                     } else {
@@ -148,9 +152,9 @@ exports.getUserRentals = function(uid, callback) {
                                             done();
                                             client.end();
                                             pg.end();
-											for (i = 0; i < midSet.length; i++) {
-												returnObj[i].rid = midSet[i].rid;
-											}
+                                            for (i = 0; i < midSet.length; i++) {
+                                                returnObj[i].rid = midSet[i].rid;
+                                            }
                                             callback(undefined, returnObj);
                                         }
                                     }
@@ -165,8 +169,8 @@ exports.getUserRentals = function(uid, callback) {
     });
 }
 
-getMovieDetails = function(title, callback) {
-    pg.connect(imdbString, function(err, client, done) {
+getMovieDetails = function (title, callback) {
+    pg.connect(imdbString, function (err, client, done) {
         if (err) {
             callback(err);
         } else {
@@ -176,7 +180,7 @@ getMovieDetails = function(title, callback) {
                     text: Query,
                     values: ['%' + title + '%']
                 },
-                function(err, result) {
+                function (err, result) {
                     // Ends the "transaction":
                     done();
 
@@ -195,13 +199,13 @@ getMovieDetails = function(title, callback) {
     });
 }
 
-getMovieActors = function(title, callback) {
-    getMovieDetails(title, function(err, movieDetails, success) {
+getMovieActors = function (title, callback) {
+    getMovieDetails(title, function (err, movieDetails, success) {
         if (err) {
             callback(err);
             console.log("BAD ERROR");
         } else {
-            pg.connect(imdbString, function(err, client, done) {
+            pg.connect(imdbString, function (err, client, done) {
                 if (err) {
                     callback(err);
                 } else {
@@ -211,7 +215,7 @@ getMovieActors = function(title, callback) {
                             text: Query,
                             values: ['%' + title + '%']
                         },
-                        function(err, result) {
+                        function (err, result) {
                             // Ends the "transaction":
                             done();
 
@@ -232,13 +236,13 @@ getMovieActors = function(title, callback) {
     });
 }
 
-getMovieDirectors = function(title, callback) {
-    getMovieActors(title, function(err, movieDetails, movieActors, success) {
+getMovieDirectors = function (title, callback) {
+    getMovieActors(title, function (err, movieDetails, movieActors, success) {
         if (err) {
             callback(err);
             console.log("BAD ERROR");
         } else {
-            pg.connect(imdbString, function(err, client, done) {
+            pg.connect(imdbString, function (err, client, done) {
                 if (err) {
                     callback(err);
                 } else {
@@ -248,7 +252,7 @@ getMovieDirectors = function(title, callback) {
                             text: Query,
                             values: ['%' + title + '%']
                         },
-                        function(err, result) {
+                        function (err, result) {
                             // Ends the "transaction":
                             done();
 
@@ -268,8 +272,8 @@ getMovieDirectors = function(title, callback) {
     });
 }
 
-exports.searchMovies = function(uid, movieTitle, callback) {
-    getMovieDirectors(movieTitle, function(err, movieDetails, movieActors, movieDirectors, success) {
+exports.searchMovies = function (uid, movieTitle, callback) {
+    getMovieDirectors(movieTitle, function (err, movieDetails, movieActors, movieDirectors, success) {
         if (err) {
             callback(err);
             console.log("BAD ERROR");
@@ -303,39 +307,41 @@ exports.searchMovies = function(uid, movieTitle, callback) {
                     }
                 }
                 currentResult.actors = actorArray;
+                currentResult.poster = getPosterUrl(currentResult.title);
+                returnObject[returnObject.length] = currentResult;
+            }
 
-                pg.connect(customerString, function(err, client, done) {
-                    if (err) {
-                        callback(err);
-                    } else {
-                        var statusQuery = "SELECT * FROM rentals WHERE rid = $1";
+
+            pg.connect(customerString, function (err, client, done) {
+                if (err) {
+                    callback(err);
+                } else {
+                    var statusQuery = "SELECT * FROM rentals WHERE rid = $1";
+                    var statusCount = 0;
+                    returnObject.forEach(function (entry) {
                         client.query({
                                 text: statusQuery,
-                                values: [currentID]
+                                values: [entry.mid]
                             },
-                            function(err, result) {
+                            function (err, result) {
                                 // Ends the "transaction":
-
-
                                 if (err) {
                                     callback(err, undefined, false);
                                 } else {
-
-
                                     if (result.rows.length > 0) {
                                         var rental_uid = result.rows[0].uid;
                                         if (rental_uid == uid) {
-                                            currentResult.status = "YOU HAVE IT";
+                                            entry.status = "YOU HAVE IT";
                                         } else {
-                                            currentResult.status = "UNAVAILABLE";
+                                            entry.status = "UNAVAILABLE";
                                         }
                                     } else {
-                                        currentResult.status = "AVAILABLE";
+                                        entry.status = "AVAILABLE";
                                     }
-									currentResult.poster = getPosterUrl(currentResult.title);
-                                    returnObject[returnObject.length] = currentResult;
+
+                                    statusCount++;
                                     done();
-                                    if (returnObject.length == movieDetails.length) {
+                                    if (statusCount == returnObject.length) {
                                         client.end();
                                         pg.end();
                                         callback(undefined, returnObject);
@@ -343,34 +349,41 @@ exports.searchMovies = function(uid, movieTitle, callback) {
 
                                 }
                             });
-                    }
-                });
-            }
+                    });
+                }
+            });
+
 
         }
     });
 }
 
+/**
+ * Production Function
+ * TODO: Add image caching
+**/
+/**
 function getPosterUrl(title) {
-    return "http://ia.media-imdb.com/images/M/MV5BMjExNzM0NDM0N15BMl5BanBnXkFtZTcwMzkxOTUwNw@@._V1_SX300.jpg";
-}
-
-/*
-function getPosterUrl(title)
-{
-	var processed = title.replace(" ", "+");
-	var url = "http://www.omdbapi.com/?t=" + processed + "&y=&plot=short&r=json"
+    var processed = title.replace(" ", "+");
+    var url = "http://www.omdbapi.com/?t=" + processed + "&y=&plot=short&r=json"
     var xmlHttp = null;
 
     xmlHttp = new XMLHttpRequest();
-    xmlHttp.open( "GET", url, false );
-    xmlHttp.send( null );
+    xmlHttp.open("GET", url, false);
+    xmlHttp.send(null);
     var res = JSON.parse(xmlHttp.responseText);
-	
-    if(res.Poster=="N/A"){
-		return "https://s.ytimg.com/yts/img/no_thumbnail-vfl4t3-4R.jpg";
-	} else {
-		return res.Poster;
-	}
+    if (res.Poster == "N/A") {
+        return "https://s.ytimg.com/yts/img/no_thumbnail-vfl4t3-4R.jpg";
+    } else {
+        return res.Poster;
+    }
 }
-*/
+**/
+
+/**
+ * Development Function
+ **/
+
+function getPosterUrl(title) {
+    return "http://ia.media-imdb.com/images/M/MV5BMjExNzM0NDM0N15BMl5BanBnXkFtZTcwMzkxOTUwNw@@._V1_SX300.jpg";
+}

@@ -25,6 +25,20 @@ exports.searchMovies = function(req, res) {
             res.render('partials/movie_display', { moviedata: data });
         }
     });
+}
 
-
+exports.rentMovie = function(req, res) {
+    var movieID = req.body.movieid;
+    console.log(movieID);
+    //TODO: Call rentMovie from DBC
+    /*
+    if (err) {
+        console.log("ERROR");
+        console.log(err);
+        var e = "An error occured. Please Try again.";
+        res.send(e);
+    } else {
+        console.log("
+    }
+    */
 }

@@ -62,7 +62,8 @@ li {
     width: 50%;
 }
 .menu li.active {
-    color:#3E885B;
+    color:#fff;
+    font-family:Gotham-Medium, "Comic Sans MS",helvetica,arial;
 }
 .views-wrapper {
     background:#CDD;
@@ -140,7 +141,13 @@ li {
     overflow: hidden;
     padding: 0;
     text-align: left;
+    width:450px;
 }
+.single-movie:hover {
+    background:#85BDA6;
+}
+/*
 .single-movie .li {
     float:left;
 }
+*/

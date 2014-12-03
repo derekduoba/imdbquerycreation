@@ -2,11 +2,9 @@ var pg = require('pg');
 var XMLHttpRequest = require("xmlhttprequest").XMLHttpRequest;
 
 // DB connection strings, to be modified according to DB configuration
-//var imdbString = "postgres://postgres:admin@localhost/imdb";
 var imdbString = "postgres://dduoba:password@localhost/imdb";
 
-//var customerString = "postgres://postgres:admin@localhost/CUSTOMER"
-var customerString = "postgres://dduoba:password@localhost/CUSTOMER"
+var customerString = "postgres://dduoba:password@localhost/customer"
 
 
 /*
@@ -237,9 +235,8 @@ getMovieActors = function(title, callback) {
 getMovieDirectors = function(title, callback) {
     getMovieActors(title, function(err, movieDetails, movieActors, success) {
         if (err) {
-            //callback(err);
+            callback(err);
             console.log("BAD ERROR");
-            console.log(err);
         } else {
             pg.connect(imdbString, function(err, client, done) {
                 if (err) {
@@ -274,7 +271,7 @@ getMovieDirectors = function(title, callback) {
 exports.searchMovies = function(uid, movieTitle, callback) {
     getMovieDirectors(movieTitle, function(err, movieDetails, movieActors, movieDirectors, success) {
         if (err) {
-            //callback(err);
+            callback(err);
             console.log("BAD ERROR");
         } else {
             var returnObject = [];
@@ -306,13 +303,7 @@ exports.searchMovies = function(uid, movieTitle, callback) {
                     }
                 }
                 currentResult.actors = actorArray;
-                currentResult.poster = getPosterUrl(currentResult.title);
-                returnObject[returnObject.length] = currentResult;
-                callback(returnObject, undefined); 
 
-
-                // Customer Rentals Unimplemented
-                /*
                 pg.connect(customerString, function(err, client, done) {
                     if (err) {
                         callback(err);
@@ -354,13 +345,17 @@ exports.searchMovies = function(uid, movieTitle, callback) {
                             });
                     }
                 });
-                */
             }
 
         }
     });
 }
 
+function getPosterUrl(title) {
+    return "http://ia.media-imdb.com/images/M/MV5BMjExNzM0NDM0N15BMl5BanBnXkFtZTcwMzkxOTUwNw@@._V1_SX300.jpg";
+}
+
+/*
 function getPosterUrl(title)
 {
 	var processed = title.replace(" ", "+");
@@ -372,14 +367,10 @@ function getPosterUrl(title)
     xmlHttp.send( null );
     var res = JSON.parse(xmlHttp.responseText);
 	
-    /*
     if(res.Poster=="N/A"){
 		return "https://s.ytimg.com/yts/img/no_thumbnail-vfl4t3-4R.jpg";
 	} else {
-        res.Poster = encodeURI(res.Poster);
 		return res.Poster;
 	}
-    */
-    // TODO: IMDB is not allowing AJAX GET Requests. Find solution
-    return "https://s.ytimg.com/yts/img/no_thumbnail-vfl4t3-4R.jpg";
 }
+*/

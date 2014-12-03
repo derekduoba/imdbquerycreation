@@ -16,12 +16,12 @@ else
                     li #{val.year}
                 if (val.status  === "AVAILABLE")
                     form(action="")
-                        input(type="submit", name="rentButton", id="rent-button", class="available", value="Rent This")
+                        input(type="submit", name=val.mid, id="rent-button", class="available", value="Rent This")
                 else if (val.status === "UNAVAILABLE")
                     form(action="")
-                        input(type="submit", name="rentButton", id="rent-button", class="unavailable", value="Unavailable")
+                        input(type="submit", name=val.mid, id="rent-button", class="unavailable", value="Unavailable")
                 else if (val.status === "YOU HAVE IT")
                     form(action="")
-                        input(type="submit", name="rentButton", id="rent-button", class="unavailable", value="Rented")
+                        input(type="submit", name=val.mid, id="rent-button", class="unavailable", value="Rented")
 
             br
