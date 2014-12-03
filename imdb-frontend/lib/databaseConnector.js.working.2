@@ -128,7 +128,7 @@ exports.getUserRentals = function (uid, callback) {
                 if (err) {
                     callback(err);
                 } else {
-                    var titleQuery = "SELECT name FROM MOVIE WHERE id = $1";
+                    var titleQuery = "SELECT name, year FROM MOVIE WHERE id = $1";
                     var returnObj = [];
                     if (midSet.length > 0) {
                         for (i = 0; i < midSet.length; i++) {
@@ -142,7 +142,9 @@ exports.getUserRentals = function (uid, callback) {
                                         callback(err, undefined);
                                     } else {
                                         returnObj[returnObj.length] = {
-                                            "title": result.rows[0].name
+                                            "title": result.rows[0].name,
+											"year": result.rows[0].year,
+											"poster": getPosterUrl(result.rows[0].name)
                                         };
                                         if (returnObj.length == midSet.length) {
                                             done();

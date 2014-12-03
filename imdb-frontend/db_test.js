@@ -3,7 +3,7 @@ var connector = require('./databaseConnector.js');
 var username = "Tim";
 var password = "secret";
 var movieName = "hot tub time machine";
-var movieID = 3000;
+var movieID = 3003;
 var uid;
 
 /* AUTOMATED TESTING */
