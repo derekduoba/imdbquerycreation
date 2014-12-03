@@ -14,6 +14,7 @@ $(document).ready(function() {
     var searchResultsContainer = ".results";
     var singleMovieContainer = ".single-movie";
     var rentButton = "#rent-button";
+    var returnButton = "#return-button";
     var menu = '.menu';
 
 
@@ -114,4 +115,24 @@ $(document).ready(function() {
         return false;
     });
 
+    viewsWrapper.on("click", returnButton, function(e) {
+       if ($(e.target).hasClass("rented")) {
+            $this = e.target;
+            var movieData = { movieid: $(this).attr('name') };
+            console.log($(e.target).attr('name'));
+            $.post('/return', movieData, function(data) {
+                console.log("VALUE:");
+                console.log(data);
+                if (data === 4) {
+                    console.log("Error");
+                } else if (data === 1) {
+                    $($this).prop('value', 'not Rented');
+                } else if (data === 0) {
+                    $($this).prop('value', 'Returned');
+                }
+            });
+        } 
+        return false;
+    });
+    
 });

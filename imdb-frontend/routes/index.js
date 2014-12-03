@@ -1,9 +1,9 @@
 var jade = require('jade');
 var dbc = require('../lib/databaseConnector.js');
-var api = require('./rental_api');
 
 /*
- * Functions for handling various routing requests
+ * Functions for handling various routing requests for the CS345 IMDB Webapp
+ * @author Derek Duoba
  */
 
 
@@ -35,10 +35,9 @@ exports.renderInitialView = function(req, res) {
     var partialHTML;
     var path = req.url.split('?')[0];
     if (path.indexOf('/login') > -1) {
-        partialHTML = jade.renderFile('views/partials/home.jade', { user: req.session.username });
+        //partialHTML = jade.renderFile('views/partials/home.jade', { user: req.session.username });
         loggedin = true
         var uid = req.session.uid;
-        console.log(req.session.uid);
         if (!uid) {
             console.log("ERROR: NO SESSION");
             result = 4;
@@ -62,7 +61,7 @@ exports.renderInitialView = function(req, res) {
         }
     } else if (path.indexOf('/logout') > -1) {
         partialHTML = jade.renderFile('views/partials/login.jade');
-        loggedin = false;
+        loggedin = false
         res.render('index', { title: 'MOVIES R\' US',  partial: partialHTML, status: loggedin });
     }
 }
@@ -78,9 +77,9 @@ exports.index = function(req, res){
         var partialHTML = jade.renderFile('views/partials/login.jade');
         res.render('index', { title: 'MOVIES R\' US', partial: partialHTML } ); 
     } else {
-        
+        //var partialHTML = jade.renderFile('views/partials/home.jade');
+        //res.render('index', { title: 'MOVIES R\' US', partial: partialHTML, user: req.session.username, loggedin: req.session } );
         var uid = req.session.uid;
-        console.log(req.session.uid);
         if (!uid) {
             console.log("ERROR: NO SESSION");
             result = 4;
@@ -98,18 +97,18 @@ exports.index = function(req, res){
                     console.log(data);
                     var partialHTML1 = jade.renderFile('views/partials/movie_display_rentals.jade', { moviedata: data });
                     var partialHTML2 = jade.renderFile('views/partials/home.jade', { partial: partialHTML1 });
-                    res.render('index', { title: 'MOVIES R\' US', partial: partialHTML2, loggedin: true } );
+                    res.render('index', { title: 'MOVIES R\' US', partial: partialHTML2, status: true } );
                 }
             });
-        } 
+        }       
     }
 };
 
 
 // Rentals View
 exports.rentals = function(req, res) {
+    //res.render('partials/home', { layout: false, user: req.session.username });
     var uid = req.session.uid;
-    console.log(req.session.uid);
     if (!uid) {
         console.log("ERROR: NO SESSION");
         result = 4;
@@ -125,12 +124,15 @@ exports.rentals = function(req, res) {
             } else {
                 console.log("USER RENTALS RETURNED!");
                 console.log(data);
+                //var partialHTML1 = jade.renderFile('views/partials/movie_display_rentals.jade', { moviedata: data });
+                //var partialHTML2 = jade.renderFile('views/partials/home.jade', { partial: partialHTML1 });
+                //res.render('index', { title: 'MOVIES R\' US', partial: partialHTML2, status: true } );
                 partialHTML = jade.renderFile('views/partials/movie_display_rentals.jade', { moviedata: data });
                 res.render('partials/home', { partial: partialHTML });
             }
         });
     }
-}
+};
 
 // Search View
 exports.search = function(req, res) {
@@ -200,31 +202,3 @@ exports.logout = function(req, res) {
         });
     }
 }
-
-
-var getRentals = function(req, res) {
-    console.log(req);
-    var uid = req;
-    if (!uid) {
-         console.log("ERROR: NO SESSION");
-        result = 4;
-        res.json(result);
-    } else {
-        dbc.getUserRentals(uid, function(err, data) {
-            var partialHTML;
-            if (err) {
-                console.log("ERROR");
-                console.log(err);
-                var e = "An error occured. Please try again.";
-                res.render('partials/movie_display_rentals', { moviedata: data });
-            } else {
-                console.log("USER RENTALS RETURNED!");
-                console.log(data);
-                partialHTML = jade.renderFile('views/partials/movie_display_rentals.jade', { moviedata: data });
-                //res.render('partials/movie_display_rentals', { partial: partialHTML });
-                res.send(partialHTML);
-            }
-        });
-    }
-}
-
