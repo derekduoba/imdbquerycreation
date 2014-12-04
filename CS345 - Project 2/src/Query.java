@@ -413,7 +413,9 @@ public class Query {
     public void transaction_rent(int cid, int mid) throws Exception {
         /* rend the movie mid to the customer cid */
         /* remember to enforce consistency ! */
-
+    	
+    	_begin_transaction_read_write_statement.executeUpdate(); //begin transactions
+    	
     	int number_rented = helper_compute_remaining_rentals(cid);
 
     	//checks to see if allowed more rental && movie is free
@@ -433,16 +435,19 @@ public class Query {
     		_transaction_update_customer.setInt(1, temp);
     		_transaction_update_customer.setInt(2, cid);
     		_transaction_update_customer.executeUpdate();
+    		
+    		_commit_transaction_statement.executeUpdate();//commit transactions
     	}
-    	else if(!helper_check_if_movie(mid)){ System.out.println("Movie does not exist in database."); }
-    	else if(helper_who_has_this_movie(mid)==cid){ System.out.println("You are currently renting this movie!"); }
-    	else if(number_rented==0){ System.out.println("You have exceeded max rentals, please return a movie."); }
-    	else if(helper_check_movie(mid)){ System.out.println("The movie has been rented out by another customer. Please try again later."); }
-    	
+    	else if(!helper_check_if_movie(mid)){ _rollback_transaction_statement.executeUpdate(); System.out.println("Movie does not exist in database."); }
+    	else if(helper_who_has_this_movie(mid)==cid){ _rollback_transaction_statement.executeUpdate(); System.out.println("You are currently renting this movie!"); }
+    	else if(number_rented==0){ _rollback_transaction_statement.executeUpdate(); System.out.println("You have exceeded max rentals, please return a movie."); }
+    	else if(helper_check_movie(mid)){ _rollback_transaction_statement.executeUpdate(); System.out.println("The movie has been rented out by another customer. Please try again later."); }
     }
 
     public void transaction_return(int cid, int mid) throws Exception {
         /* return the movie mid by the customer cid */
+    	
+    	_begin_transaction_read_write_statement.executeUpdate(); //begin transactions
     	
     	//checks to see if customer actually rented the movie
     	if( (helper_check_movie(mid)) && (helper_who_has_this_movie(mid) == cid) ){
@@ -457,8 +462,10 @@ public class Query {
     		_transaction_return_customer.setInt(1, temp);
     		_transaction_return_customer.setInt(2, cid);
     		_transaction_return_customer.executeUpdate();
+    		
+    		_commit_transaction_statement.executeUpdate();//commit transactions
     	}
-    	else{ System.out.println("You did not rent this movie."); }
+    	else{ _rollback_transaction_statement.executeUpdate(); System.out.println("You did not rent this movie."); }
     }
 
     public void transaction_fast_search(int cid, String movie_title)
