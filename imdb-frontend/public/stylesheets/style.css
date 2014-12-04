@@ -122,6 +122,7 @@ li {
 }
 .movie-list img {
     float:left;
+    height:150px;
 }
 .single-movie {
     list-style:none;
