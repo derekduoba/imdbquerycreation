@@ -47,5 +47,6 @@ CS345 - Project 2/src/customCreateTables.sql
  
  and login using the following credentials:
  
- user: Tim
- password: secret
+- user: Tim
+ 
+- password: secret
