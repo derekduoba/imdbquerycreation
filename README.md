@@ -13,24 +13,24 @@ http://avid.cs.umass.edu/courses/345/f2014/index.html
 INSTRUCTIONS:
 * The following assumes some familiarity with linux, node.js, and postgresql.
 
-1. Grab the respository
+1.) Grab the respository
 
 
-2. Create an imdb database in Postgres, and download & import the IMDB2010 dataset:
+2.) Create an imdb database in Postgres, and download & import the IMDB2010 dataset:
 
 http://avid.cs.umass.edu/courses/345/f2014/data/imdb2010.zip
 
 (instructions for adding the database: http://avid.cs.umass.edu/courses/345/f2014/hw/hw1.html)
 
 
-3. Create a CUSTOMER database and import the schema in:
+3.) Create a CUSTOMER database and import the schema in:
 
 CS345 - Project 2/src/customCreateTables.sql
 
 (The data import can be done using the same methods outline in step 2)
  
 
- 4. Copy 
+ 4.) Copy 
  
  imdb-movie-rentals/imdb-frontend/lib/databaseConnector.js.working.2
  
@@ -41,7 +41,7 @@ CS345 - Project 2/src/customCreateTables.sql
  and update lines 10 and 11 to match the access credentials of your local system.
  
 
- 5. Run node.js by executing the following command from the imdb-frontend directory:
+ 5.) Run node.js by executing the following command from the imdb-frontend directory:
  
  node app.js
  
