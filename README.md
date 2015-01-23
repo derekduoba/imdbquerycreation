@@ -30,15 +30,11 @@ CS345 - Project 2/src/customCreateTables.sql
 (The data import can be done using the same methods outline in step 2)
  
 
- 4.) Copy 
+ 4.) Open 
  
- imdb-movie-rentals/imdb-frontend/lib/databaseConnector.js.working.2
+ imdb-movie-rentals/imdb-frontend/lib/databaseConnector.js 
  
- to
- 
- imdb-movie-rentals/imdb-frontend/lib/databaseConnector.js.working.2 
- 
- and update lines 10 and 11 to match the access credentials of your local system.
+ and update lines 10 and 11 to match the access credentials of your local system's postgres installation.
  
 
  5.) Run node.js by executing the following command from the imdb-frontend directory:
