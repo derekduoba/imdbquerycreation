@@ -52,7 +52,7 @@ function removeMovieSubmission(movie, movieSelectionsContainer, currentQueryData
 }
 
 function getMovies(data, retrievedMoviesContainer, movieMap, currentQueryData) {
-    var jsonResults = JSON.parse(data);
+    var jsonResults = data;
     for (var member in movieMap) {
         delete movieMap[member];
 
@@ -181,7 +181,7 @@ $(document).ready(function() {
             $.ajax({
                 async: true,
                 url: currentURL,
-                timeout: 5000,
+                timeout: 8000,
             }).fail(function(data, textStatus) {
                     retrievedMoviesContainer.html("<p class='lead'>The movie database appears to be down. Please try again later.</p>");
             }).success(function(data) {
