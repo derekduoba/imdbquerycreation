@@ -19,7 +19,6 @@ app.use(function(req,res,next){
 });
 
 var winston = require('winston');
-
 winston.add(winston.transports.File, { filename: 'logs/nodejs.log' });
 winston.handleExceptions(new winston.transports.File({ filename: 'logs/exceptions.log' }))
 winston.log('info', 'Starting winston logger');
