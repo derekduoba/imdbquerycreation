@@ -1,0 +1,24 @@
+include mixins.jade
+doctype html(lang='en')
+head
+    meta(http-equiv='content-type', content='text/html; charset=UTF-8')
+    meta(charset='utf-8')
+    title Natural Language Query Project
+    meta(name='generator', content='Bootply')
+    meta(name='viewport', content='width=device-width, initial-scale=1, maximum-scale=1')
+    link(href='//maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css', rel='stylesheet')
+    link(href='//netdna.bootstrapcdn.com/font-awesome/3.2.1/css/font-awesome.min.css', rel='stylesheet')
+    link(href='stylesheets/bootstrap_overrides.css', rel='stylesheet')
+    body
+        include partials/intro.jade
+        include partials/longquery.jade
+        +hr 
+        include partials/shortquery.jade
+        +hr
+        include partials/search.jade
+        include partials/searchresults.jade
+        include partials/footer.jade
+// script references
+script(src='//ajax.googleapis.com/ajax/libs/jquery/2.0.2/jquery.min.js')
+script(src='//maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js')
+script(src='/javascripts/global.js')

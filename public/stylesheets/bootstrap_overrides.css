@@ -1,0 +1,109 @@
+* {
+  -webkit-border-radius: 0 !important;
+     -moz-border-radius: 0 !important;
+          border-radius: 0 !important;
+}
+input::-webkit-input-placeholder {
+   color:#E7ECEF !important;
+}
+input::-moz-placeholder {  /* Firefox 19+ */
+   color:#E7ECEF !important;  
+}
+input:-ms-input-placeholder {  
+   color:#E7ECEF !important;  
+}
+body {
+    font-family:"Roboto", "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif !important;
+}
+@media (min-width:768px) {
+    ol li {
+        font-size:18px;
+    }
+}
+.container-full.special {
+    background:#BEEE62;
+}
+.container-full.movie-search {
+    background:#46CF5F;
+}
+.row {
+    padding:0;
+    margin:0;
+}
+.input-group .form-control, .form input {
+    background:#19647E;
+    border:none;
+    color:#E7ECEF;
+}
+.btn-primary {
+    background-color: #337ab7;
+    border-color: #337ab7;
+}
+.btn-primary:hover, .btn-primary:active, .btn-primary:focus {
+    color:#000;
+    background-color:#7BB8FF;
+    border-color:#7BB8FF;
+}
+.container-full.special .btn-primary {
+    background-color:#5BAD58;
+    border-color:#5BAD58;
+}
+.container-full.special .btn-primary:hover, .container-full.special .btn-primary:active, .container-full.special .btn-primary:focus {
+    color:#000;
+    background-color:#67C464;
+    border-color:#67C464;
+}
+hr {
+    border-top: 1px solid #19647E;
+}
+.retrieved-movie-container {
+    display:table;
+    min-height:50px;
+    width:100%
+}
+table {
+    border:none;
+}
+.table-hover>tbody>tr:hover {
+    background-color:#7BB8FF;
+}
+.table>tbody>tr>td, .table>tbody>tr>th, .table>tfoot>tr>td, .table>tfoot>tr>th, .table>thead>tr>td, .table>thead>tr>th {
+    border:none;
+    padding:16px;
+    vertical-align:middle;
+}
+table td.select {
+    opacity:0;
+    text-align:center;
+    vertical-align:middle;
+}
+table td.select.selected {
+    opacity:1;
+}
+.movie-selections-container .col-lg-12 {
+    background:#417C3F;
+    color:#FFF;
+}
+.success {
+    display:table;
+    margin:auto;
+    white-space:nowrap;
+}
+.success .glyphicon {
+    float:left;
+    line-height:55px;
+    margin-right:20px;
+}
+.success h3 {
+    float:left;
+}
+.glyphicon.large {
+    font-size:50px;
+    line-height:50px;
+}
+.footer span.glyphicon {
+    float: left;
+    font-size: 25px;
+    line-height: 18px;
+    margin-right: 10px;
+}

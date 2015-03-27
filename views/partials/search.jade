@@ -1,0 +1,41 @@
+.container-full
+    br
+    br
+    br
+    br
+    br
+    .row
+        .col-md-8.col-md-offset-2
+            p.lead
+                | Please select the movies and/or television shows that correctly answer your query. Your selections do not have to be exhaustive. The search engine below pulls results from IMDB, so you should be able to retrieve anything that exists in their database.
+            p.lead
+                | Select results by clicking on them. Remove results by clicking on them a second time. Selected movies 
+                b will 
+                | persist across searches.
+    // /row
+    br
+    .row
+        .col-md-8.col-md-offset-2.text-center.v-center
+            .form
+                input.form-control.input-lg(id="movie-title", placeholder="Movie Title", type='text')
+                br
+                input.form-control.input-lg(id="movie-year", placeholder="Year", type='text')
+                br
+                button.btn.btn-lg.btn-primary.btn-block(type="button", id="search-button") SEARCH
+    // row
+    br
+    br
+    br
+    br
+    br
+    .row
+        .col-md-8.col-md-offset-2.text-center.v-center
+            .retrieved-movie-container
+                .glyphicon.glyphicon-film.large(aria-hidden="true")
+    // /row
+    br
+    br
+    br
+    br
+// /container full
+

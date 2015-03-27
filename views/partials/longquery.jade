@@ -1,0 +1,41 @@
+.container-full
+    br
+    br
+    br
+    br
+    br
+    .row
+        .col-md-8.col-md-offset-2
+            p.lead
+                | Please enter the abbreviated version of a query you would use to find specific movies and/or television shows.
+ 
+            p.lead
+                | Examples:
+            
+            ol
+                li every movie directed by christopher nolan
+                li movies from the 2014 featuring kevin spacey as a producer but not an actor
+                li adventure movies between 2000 and 2015 featuring performances by daniel craig
+                li tv dramas produced by 20th century fox or sony in 2012
+            br
+    // /row
+    .row
+        .col-md-8.col-md-offset-2.text-center.v-center
+            .row
+                form
+                    .input-group
+                        input.form-control.input-lg(title="Natural Language Query", placeholder='Enter a full-length query', type='text', id='long-query')
+                        span.input-group-btn
+                            button.btn.btn-lg.btn-primary(type='button', id="long-query-button") OK
+    // /row
+    br
+    .row
+        .col-sm-8.col-sm-offset-2.text-center.v-center.long-query-message(style="overflow:hidden;")
+            p.lead
+                &zwnj;
+    // /row
+    br
+    br
+    br
+// /container full
+

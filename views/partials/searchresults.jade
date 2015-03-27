@@ -1,0 +1,35 @@
+.container-full.special
+    br
+    br
+    br
+    br
+    br
+    .row
+        .col-md-8.col-md-offset-2
+            p.lead
+                | These are the movies and/or television shows you've selected as answers to your search query. Any incorrect candidates can be removed by clicking on them.
+            p.lead
+                | Click the 
+                b SUBMIT 
+                | button as soon as a sufficient number of movies / tv shows have been selected.
+    .row
+        .col-md-8.col-md-offset-2.text-center.v-center
+            .movie-selections-container
+                br
+                .glyphicon.glyphicon-list-alt.large(aria-hidden="true")
+    // /row
+    br
+    br
+    .row
+        .col-sm-8.col-sm-offset-2.text-center.v-center.submit-message(style="overflow:hidden;")
+            p.lead
+                &zwnj;
+    // /row
+    br
+    br
+    .row
+        .col-md-8.col-md-offset-2.text-center.v-center
+            button.btn.btn-lg.btn-primary.btn-block(type="button", id="submit-button") SUBMIT
+    br
+// /container full
+

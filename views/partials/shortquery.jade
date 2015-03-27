@@ -1,0 +1,38 @@
+.container-full
+    br
+    br
+    br
+    br
+    br
+    .row
+        .col-md-8.col-md-offset-2
+            p.lead
+                | Please enter the natural language version of a query you would use to find specific movies and/or television shows.
+            p.lead
+                | Examples:
+            ol
+                li movies christopher nolan director
+                li movies kevin spacey 2014 producer not actor
+                li adventure movies 2000 to 2015 daniel craig actor
+                li tv drama 20th century fox sony 2012  
+            br
+    // /row
+    .row
+        .col-md-8.col-md-offset-2.text-center.v-center
+            .form
+                .input-group
+                    input.form-control.input-lg(title="Abbreviated Language Query", placeholder='Enter an abbreviated query', type='text', id="short-query")
+                    span.input-group-btn
+                        button.btn.btn-lg.btn-primary(type='button', id="short-query-button") OK
+    // /row
+    br
+    .row
+        .col-sm-8.col-sm-offset-2.text-center.v-center.short-query-message(style="overflow:hidden;")
+            p.lead
+                &zwnj;
+    // /row
+    br
+    br
+    br
+// /container full
+
